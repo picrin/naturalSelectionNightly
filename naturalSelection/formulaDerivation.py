@@ -1,7 +1,10 @@
 from sage.all import *
-#lambda is geogra
+
+#lambda is geographic longitude
 lam = var('lam')
+#psi is geographic latitude
 psi = var('psi')
+
 theta = var('theta')
 delta = var('delta')
 
@@ -27,14 +30,19 @@ def rotatePointAroundUnitVector(point, unitVector, angle, clockwise=True):
 def rotatePointDifferent(point, unitVector, angle):
     return point*cos(angle) + unitVector.cross_product(point)*sin(angle) + unitVector * (unitVector.dot_product(point)) * (1 - cos(angle))
 
+# that's the bearing
 b = rotatePointAroundUnitVector(t, p, theta, clockwise=True).simplify_full()
 
-n = rotatePointAroundUnitVector(p, crossMatrix(b)*p, delta, clockwise=False).simplify_full()
-psi_n = arcsin(n[1]).simplify_full()
-lam_n = (arccos(n[2]/cos(psi_n))).simplify_full()
+# this is the new coordinate
+n = rotatePointAroundUnitVector(p, crossMatrix(b) * p, delta, clockwise=False).simplify_full()
+psi_n = asin(n[1]).simplify_full()
+lam_n = (acos(n[2]/cos(psi_n))).simplify_full()
 
-print(psi_n)
-print(lam_n)
+print("formula for psi_new, where psi is the geographical latitude, theta is the bearing and delta is the distance on a unit sphere", str(psi_n))
+print("formula for lam_new, where lam is the geographical longitude, theta is the bearing and delta is the distance on a unit sphere", str(lam_n))
+
+#import inspect
+#print(inspect.getfile(lam_n.__str__))
 
 # psi = 53 N
 # lam = 22 E
@@ -46,7 +54,7 @@ print(lam_n)
 rtd = (180/pi).n()
 dtr = (pi/180).n()
 
-kwargs_random = {"lam":22*dtr, "psi":53*dtr, "theta":96*dtr, "delta":1}
+example_kwargs = {"lam":22*dtr, "psi":53*dtr, "theta":96*dtr, "delta":1}
 def evaluateCoords(kwargs):
     print("psi", psi.subs(**kwargs).n())
     print("psi_deg", psi.subs(**kwargs).n()*rtd)
@@ -55,22 +63,10 @@ def evaluateCoords(kwargs):
     print("b", b.subs(**kwargs).n())
     print("t", t.subs(**kwargs).n())
     print("n", n.subs(**kwargs).n())
-    print("psi_n", psi_n.subs(**kwargs).n())
-    print("psi_deg_n", psi_n.subs(**kwargs).n()*rtd)
-    print("lam_n", lam_n.subs(**kwargs).n())
-    print("lam_n_deg", lam_n.subs(**kwargs).n()*rtd)
+    print("psi_new", psi_n.subs(**kwargs).n())
+    print("psi_deg_new", psi_n.subs(**kwargs).n()*rtd)
+    print("lam_new", lam_n.subs(**kwargs).n())
+    print("lam_new_deg", lam_n.subs(**kwargs).n()*rtd)
 
-evaluateCoords(kwargs_random)
-#evaluateCoords({"lam":0.0, "psi":0, "theta":3.14/2, "delta":3.14})
-#evaluateCoords({"lam":-pi.n()/4, "psi":pi.n()/4, "theta":1500.190, "delta":8})
-
-#unitVector = vector([-1/2.0, sqrt(2)/2, -1/2.0])
-#p = vector([1/2.0, sqrt(2)/2, 1/2.0])
-#print("p", p.n())
-#print("p.t", (p.dot_product(t)).simplify_full())
-#print("t.north", (p.dot_product(vector([0,1,0]))).simplify_full())
-#print(unitVector.dot_product(p).n())
-#print(rotatePointAroundUnitVector(p, unitVector, pi, clockwise=False).n())
-#print(rotatePointDifferent(p, unitVector, pi).n())
-
-
+# uncomment to test move with parameters example_kwargs
+# evaluateCoords(example_kwargs)

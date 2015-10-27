@@ -1,0 +1,109 @@
+#!/bin/bash
+
+unset CDPATH
+SOURCE="${BASH_SOURCE[0]}"
+while [ -h "$SOURCE" ]; do # resolve $SOURCE until the file is no longer a symlink
+  DIR="$( cd -P "$( dirname "$SOURCE" )" && pwd )"
+  SOURCE="$(readlink "$SOURCE")"
+  [[ $SOURCE != /* ]] && SOURCE="$DIR/$SOURCE" # if $SOURCE was a relative symlink, we need to resolve it relative to the path where the symlink file was located
+done
+DIR="$( cd -P "$( dirname "$SOURCE" )" && pwd )"
+SCRIPT_DIR=$DIR
+
+checkCommandExists() {
+   $1 --version 2> /dev/null > /dev/null
+   exists1=$?
+   $1 -version 2> /dev/null > /dev/null
+   exists2=$?
+   if [[ $exists1 || $exists2 ]]; then
+     return 0
+   else 
+     return 1
+   fi
+}
+USAGE="use -h for help"
+args=$(getopt -l "generateGraph:" -l "derive" -l "test" -o "h" -- "$@")
+length=${#args} 
+if [[ $length -le 3 ]]; then 
+  echo "you have to pass some arguments $USAGE"
+  exit 1
+fi
+eval set -- "$args"
+
+while [ $# -ge 1 ]; do
+        case "$1" in
+                --)
+                    #everything beyond this point is not an argument
+                    shift
+                    break
+                   ;;
+                --test)
+                        checkCommandExists python3
+                        python3=$?
+                        checkCommandExists python2
+                        python2=$?
+                        if [[ python2 && python3 ]]; then
+                          echo testing with python2 
+                          python2 $SCRIPT_DIR/naturalSelection/test.py
+                          if [[ $? -ne 0 ]]; then
+                            echo python2 tests are broken
+                            exit 1
+                          fi
+                          echo testing with python3
+                          python3 $SCRIPT_DIR/naturalSelection/test.py
+                          if [[ $? -ne 0 ]]; then
+                            echo python3 tests are broken
+                            exit 1
+                          fi
+                          exit 0
+                        fi
+                        echo you have to have both python 2 and python 3 installed end in your path as \"python2\" and \"python3\"
+                        exit 1
+                        shift
+                        ;;
+                    
+                --derive)
+                    checkCommandExists sage
+                    if [ $? ]; then
+                       echo running $SCRIPT_DIR/naturalSelection/formulaDerivation.py
+                       sage -python $SCRIPT_DIR/naturalSelection/formulaDerivation.py 
+                       exit
+                    fi
+                    echo "you have to have sage installed and in your path"
+                    exit 1
+                    shift
+                    ;;
+                --generateGraph)
+                        checkCommandExists python3
+                        if [ $? ]; then
+                          echo TODO generate graph using python3
+                          exit 1
+                        fi
+                        checkCommandExists python2
+                        if [ $? ]; then
+                          echo TODO generate graph using python2
+                          exit 1
+                        fi
+                        checkCommandExists python
+                        if [ $? ]; then
+                          echo TODO generate graph using python
+                          exit 1
+                        fi
+                        echo you have to have python installed end in your path as python2 or python3 or python
+                        exit 1
+                        shift
+                        ;;
+                -h)
+                        cat $SCRIPT_DIR/README.md
+                        exit 0
+                        ;;
+        esac
+
+        shift
+done
+
+if [[ $* != "" ]]; then
+  echo "can't process the following non-args: $*, $USAGE"
+  exit 1
+fi
+
