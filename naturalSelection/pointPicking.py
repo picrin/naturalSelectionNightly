@@ -7,8 +7,8 @@ def pickPoint():
     procedure is repeated many times it will result in an equally dense
     distribution on the sphere. Longitude is a random variate drawn from
     unif(0, 2pi) and latitude (interestingly) is a random variate chosen
-    corresponding to a probability density function com.sine([-pi/2, pi/2]).
-    The latter is achieved by integrating com.sine on a corresponding domain
+    corresponding to a probability density function cosine([-pi/2, pi/2]).
+    The latter is achieved by integrating cosine on a corresponding domain
     (the result being -sine([-pi/2, pi/2]), choosing an intermediate random
     variate unif(-1, 1), and mapping the intermediate variate through the
     inverse of the integral, which gives us -arcsin([-1, 1])). It's then noticed
@@ -44,9 +44,20 @@ def moveOnSphere(point, bearing, distance):
     The formula is derived using sage, have a look at formulaDerivation.py
     and README.md  
     """
-    newLon = m.pi - m.acos((m.cos(point[0]) * m.cos(bearing) * m.sin(distance) * m.sin(point[1]) - m.cos(distance) * m.cos(point[0]) * m.cos(point[1]) + m.sin(distance) * m.sin(point[0]) * m.sin(bearing)) / m.sqrt(-1 * m.cos(point[1]) ** 2 * m.cos(bearing) ** 2 * m.sin(distance) ** 2 - 2 * m.cos(distance) * m.cos(point[1]) * m.cos(bearing) * m.sin(distance) * m.sin(point[1]) - m.cos(distance) ** 2 * m.sin(point[1]) ** 2 + 1))
+    #newLon = m.pi - m.acos((m.cos(point[0]) * m.cos(bearing) * m.sin(distance) * m.sin(point[1]) - m.cos(distance) * m.cos(point[0]) * m.cos(point[1]) + m.sin(distance) * m.sin(point[0]) * m.sin(bearing)) / m.sqrt(-1 * m.cos(point[1]) ** 2 * m.cos(bearing) ** 2 * m.sin(distance) ** 2 - 2 * m.cos(distance) * m.cos(point[1]) * m.cos(bearing) * m.sin(distance) * m.sin(point[1]) - m.cos(distance) ** 2 * m.sin(point[1]) ** 2 + 1))
     newLat = m.asin(m.cos(point[1]) * m.cos(bearing) * m.sin(distance) + m.cos(distance) * m.sin(point[1]))
+    newLon = point[0] + m.atan2(m.sin(bearing) * m.sin(distance) * m.cos(point[1]), m.cos(distance) - m.sin(point[1]) * m.sin (newLat))
     return newLon, newLat
-    
+
+def polarToXYZ(point):
+    """
+    Translate point from geographic coordinates to cartesian, where X is
+    pointing eastwards, Y is pointing north and Z is pointing roughly towards
+    Africa.
+    """
+    X = m.sin(point[0]) * m.cos(point[1])
+    Y = m.sin(point[1])
+    Z = m.cos(point[0]) * m.cos(point[1])
+    return (X, Y, Z)
 rtd = (180/m.pi)
 dtr = (m.pi/180)
