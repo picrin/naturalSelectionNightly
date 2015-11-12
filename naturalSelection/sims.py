@@ -3,11 +3,37 @@ import random
 import math
 
 def createGenotype():
-    return {"isDominant":None, "hasCopy1":False, "hasCopy2":False}
+    return {"isDominant": None, "hasCopy1": False, "hasCopy2": False}
+
+uid = 0
+
+def changeUID(newUID):
+    global uid
+    uid = newUID
 
 def createSim():
-    return {"genotype":createGenotype(), "pos":(None, None), "parentA":None, "parentB":None, "isMale":None}
+    global uid
+    sim = {"genotype": createGenotype(), "pos": (None, None), "parentA": None, "parentB": None, "isMale": None, "uid": uid}
+    uid += 1
+    return sim
 
+def simToTuple(obj):
+    #for key in obj:
+    #    print(key, obj[key])
+    if not isinstance(obj, dict) or obj is None:
+        return obj
+    result = []
+    for key in obj:
+        if key not in ["parentA", "parentB"]:
+            result.append((key, simToTuple(obj[key])))
+        else:
+           if obj[key] is not None:
+               result.append((key, obj[key]["uid"]))
+           else:
+               result.append((key, None))
+    result.sort()
+    return tuple(result)
+    
 def makeDominant(sim):
     sim["genotype"]["isDominant"] = True
     return sim
@@ -36,10 +62,16 @@ def getRandomGeneCopy(sim):
         return sim["genotype"]["hasCopy1"]
     return sim["genotype"]["hasCopy2"]
 
+def setRandomGeneCopy(sim, val):
+    if random.randint(0, 1):
+        sim["genotype"]["hasCopy1"] = val
+    else:
+        sim["genotype"]["hasCopy2"] = val
+
 def createSimFromParents(parentA, parentB):
-    if parentA["gender"] == parentB["gender"]:
+    if parentA["isMale"] == parentB["isMale"]:
         raise ValueError("can't breed sims of the same gender")
-    if parentA["gender"]:
+    if parentA["isMale"]:
         mother = parentB
     else:
         mother = parentA

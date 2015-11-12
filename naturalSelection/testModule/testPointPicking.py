@@ -19,11 +19,11 @@ def histogram(psiRange, bucketNo, left, right):
 class TestPointPicking(unittest.TestCase):
     # testing that the distribution is cosine
     def testBuckets(self):
-        buckets = histogram([pointPicking.pickPoint()[1] for i in range(500)], 10, -math.pi/2, math.pi/2)
+        buckets = histogram([pointPicking.pickPoint()[1] for i in range(1000)], 10, -math.pi/2, math.pi/2)
         bucketAvg = sum(buckets)/float(len(buckets))
         diffFromAvgSqr = list(map(lambda n: (n-bucketAvg)**2, buckets))
         sqrSum = sum(diffFromAvgSqr)
-        self.assertTrue(sqrSum < 2)
+        self.assertTrue(sqrSum < 2.5)
     # testing that the distance between Katowice and Glasgow is right
     def testDistance(self):
         Katowice = 0.3319, 0.87732 # 19.0167 E 50.2667 N,
