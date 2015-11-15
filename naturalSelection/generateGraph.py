@@ -2,6 +2,8 @@ from .pointPicking import *
 from .sims import *
 from .pointPicking import *
 import random, bisect
+import json
+
 
 def trackSim(sim, allSims):
     allSims.append(sim)
@@ -24,23 +26,44 @@ def generatePossibleCouples(sims):
 def simpleProximityBreeder(sims):
     """
     child distribution is given by the following discrete probability distribution function:
-    f(1) = 0.2
-    f(2) = 0.5
-    f(3) = 0.3
-    Expected value of f is 2.1, and that's why it was decided to be a good simple choice,
+    f(0) = 0.18
+    f(1) = 0.1
+    f(2) = 0.4
+    f(3) = 0.2
+    f(4) = 0.1
+    f(5) = 0.02
+    Expected value of f is 2.0, and that's why it was decided to be a good simple choice,
     as it both captures the intuition that most likely outcomes of mating are 2 children and
     it won't lead to quick exponential growth.
     """
+    f0 = 0.18
+    f1 = 0.1
+    f2 = 0.4
+    f3 = 0.2
+    f4 = 0.1
+    f5 = 0.02
+    pdf = [f0, f1, f2, f3, f4, f5]
+    cdf = []
+    current = 0
+    for i in pdf:
+        current += i
+        cdf.append(current)
+    assert(cdf[-1] == 1)
     couples = proximityMater(sims)
     newSims = []
     for couple in couples:
-        randomChildren = random.uniform(0, 1)
-        if randomChildren < 0.2:
-            childrenNo = 1
-        elif randomChildren < 0.7:
-            childrenNo = 2
-        else:
-            childrenNo = 3
+        randomChildren = random.uniform(0, sum(pdf))
+        for childrenNo, threshold in enumerate(cdf):
+            if randomChildren < threshold:
+                break
+        newSims += [createSimFromParents(*couple) for i in range(childrenNo)]
+    return newSims
+    
+def constantBreeder(sims):
+    couples = proximityMater(sims)
+    newSims = []
+    for couple in couples:
+        childrenNo = 3
         newSims += [createSimFromParents(*couple) for i in range(childrenNo)]
     return newSims
 
@@ -53,9 +76,6 @@ def proximityMater(sims):
         howClose = sphereDistance(positionA, positionB)
         proximityPossibleCouples.append([howClose, possibleCouple,])
     proximityPossibleCouples.sort(key = lambda n: n[0])
-    #print("possible couples")
-    #print([[couple[0], [couple[1][0]["isMale"], couple[1][1]["isMale"]]] for couple in proximityPossibleCouples])
-    #print("end possible couples")
     actualCouples = []
 
     for distanceCouple in proximityPossibleCouples:
@@ -80,7 +100,6 @@ def simsFrame(sims = None, populationSize = 0, mutator = None, breeder=None, mig
         else:
             raise ValueError("allSims and populationSize can't be both default")
     if breeder is not None and not stopBreeding:
-        #print ("shouldn't be None", sims)
         sims = breeder(sims)
     if mutator is not None:
         mutator(sims)
@@ -96,17 +115,51 @@ def wandererMigrator(sims):
     for sim in sims:
         moveWanderer(sim)
 
+def serialiseSim(sim, first = False, last = False):
+    shallowCopyNoParents = {}
+    for key in sim:
+        if key not in ["parentA", "parentB"]:
+            shallowCopyNoParents[key] = sim[key]
+        else:
+            if sim[key] is not None:
+                shallowCopyNoParents[key] = sim[key]["uid"]
+            else:
+                shallowCopyNoParents[key] = None
+    if first:
+        shallowCopyNoParents["generation"] = "first"
+    if last:
+        shallowCopyNoParents["generation"] = "last"
+    if not first and not last:
+        shallowCopyNoParents["generation"] = "middle"
+    return shallowCopyNoParents
+
 def generateToyPopulation(fileObj):
     """
-    this gives a very small, initially 4 sims population, which has one sim who is a carrier of a dominant allele.
+    this gives a population, which has one sim who is a carrier of a dominant allele.
     The population then evolves for 3 generations (achieving total of 4 generations) using the wanderer model of
     migration and the simpleProximityBreeder.
     """
-    def writeAllSims(sims):
-        for sim in sims:
-            fileObj.write(str(simToTuple(sim)) + "\n")
-    sims, nextFrame = simsFrame(populationSize = 4, mutator = oneDominantAlleleMutator)
-    for i in range(3):
-        writeAllSims(sims)
-        sims, nextFrame = nextFrame(migrator=wandererMigrator, breeder=simpleProximityBreeder)
-    writeAllSims(sims)
+    def firstGeneration():
+       return simsFrame(populationSize = 10, mutator = oneDominantAlleleMutator)
+    def nextGeneration(nextFrame):
+       return nextFrame(migrator=wandererMigrator, breeder=simpleProximityBreeder)
+    generatePopulation(fileObj, 3, firstGeneration, nextGeneration)
+
+def generatePopulation(fileObj, generationNo, firstGeneration, nextGeneration):
+    def writeAllSims(sims, first=False, last=False):
+        firstSim = first
+        if firstSim:
+           fileObj.write("[")
+        for i, sim in enumerate(sims):
+            if not firstSim:
+                fileObj.write(",\n")
+            firstSim = False
+            json.dump(serialiseSim(sim, first=first, last=last), fileObj)
+    sims, nextFrame = firstGeneration()
+    first = True
+    for i in range(generationNo):
+        writeAllSims(sims, first=first)
+        first = False
+        sims, nextFrame = nextGeneration(nextFrame)
+    writeAllSims(sims, last=True)
+    fileObj.write("]")

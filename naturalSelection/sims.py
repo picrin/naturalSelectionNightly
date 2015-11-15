@@ -16,24 +16,7 @@ def createSim():
     sim = {"genotype": createGenotype(), "pos": (None, None), "parentA": None, "parentB": None, "isMale": None, "uid": uid}
     uid += 1
     return sim
-
-def simToTuple(obj):
-    #for key in obj:
-    #    print(key, obj[key])
-    if not isinstance(obj, dict) or obj is None:
-        return obj
-    result = []
-    for key in obj:
-        if key not in ["parentA", "parentB"]:
-            result.append((key, simToTuple(obj[key])))
-        else:
-           if obj[key] is not None:
-               result.append((key, obj[key]["uid"]))
-           else:
-               result.append((key, None))
-    result.sort()
-    return tuple(result)
-    
+        
 def makeDominant(sim):
     sim["genotype"]["isDominant"] = True
     return sim
@@ -81,6 +64,8 @@ def createSimFromParents(parentA, parentB):
     sim["parentB"] = parentB
     sim["genotype"]["hasCopy1"] = getRandomGeneCopy(parentA)
     sim["genotype"]["hasCopy2"] = getRandomGeneCopy(parentB)
+    assert(parentA["genotype"]["isDominant"] == parentB["genotype"]["isDominant"])
+    sim["genotype"]["isDominant"] = parentA["genotype"]["isDominant"]
     sim["isMale"] = random.randint(0, 1)
     return sim
 
