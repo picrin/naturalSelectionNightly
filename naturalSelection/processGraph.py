@@ -1,10 +1,21 @@
-import networkx
 import json
 import collections
+#networkx is imported lazily so that pypy doesn't complain.
 
-def loadGraph(fileObj):
+def loadGraph(fileObj, fromVar=None):
+    """
+    fileObj is a file representation of the population graph generated and written to disk by one of
+    generatePopulation* functions from generateGraph module.
+    Returns a simulation: a set of all sims represented as a networkx graph, and lists of uids of
+    respectively first and last generation sims, to facilitate navigation of the graph.
+    """
+    import networkx
     simsGraph = networkx.DiGraph()
-    sims = json.load(fileObj)
+    if fileObj is not None:
+        sims = json.load(fileObj)
+    else:
+        if fromVar is not None:
+            sims = fromVar
     first = []
     last = []
     for sim in sims:
@@ -36,24 +47,25 @@ def countDescendants(simulation):
     for nodeID in simulation["lastGeneration"]:
         countDescendantsInner(nodeID, nodeID)
 
-def countFeatures(simulation):
-    pass
-
 def MRCA(simulation):
+    """
+    Finds an ancestor of entire population, whose distance from all sims in the last generation is the smallest,
+    with the distance between any two sims defined only when they are related, and is an integer equal to 
+    the number of generations that separate them.
+    
+    For example, assume that A -> B means that A is a parent of B. Then if A -> B and B -> C we can say that the distance
+    between A and A is 0, A and B is 1 and A and C is 2.
+    """
     countDescendants(simulation)
     fifo = {}
     for i in simulation["lastGeneration"]:
         fifo[i] = True
     lastGenerationCount = len(simulation["lastGeneration"])
-    #print(lastGenerationCount)
-    #print(simulation["lastGeneration"])
-    generationNo = 1
+    generationNo = 0
     while len(fifo) != 0:
-        #print(len(fifo))
         newFifo = {}
         for key in fifo:
             exploreNode = simulation["graph"].node[key]
-     #       print(exploreNode["descendants"])
             if exploreNode["descendants"] == lastGenerationCount:
                 return key, generationNo
             A = exploreNode["parentA"]
@@ -64,3 +76,4 @@ def MRCA(simulation):
         fifo = newFifo
         generationNo += 1
     return None
+

@@ -4,7 +4,6 @@ from .pointPicking import *
 import random, bisect
 import json
 
-
 def trackSim(sim, allSims):
     allSims.append(sim)
 
@@ -32,23 +31,27 @@ def simpleProximityBreeder(sims):
     f(3) = 0.2
     f(4) = 0.1
     f(5) = 0.02
-    Expected value of f is 2.0, and that's why it was decided to be a good simple choice,
-    as it both captures the intuition that most likely outcomes of mating are 2 children and
-    it won't lead to quick exponential growth.
+    Expected value of f is 2.05, and that's why it was decided to be a good simple choice,
+    as it both captures the intuition that most likely outcomes of mating are about 2 children and
+    it won't lead to quick exponential growth for large populations, and for small populations it makes
+    the population less likely to die off due to random male/female imbalances.
     """
-    f0 = 0.18
+    f0 = 0.17
     f1 = 0.1
     f2 = 0.4
     f3 = 0.2
     f4 = 0.1
-    f5 = 0.02
+    f5 = 0.03
     pdf = [f0, f1, f2, f3, f4, f5]
+    return proximityBreeder(sims, pdf)
+    
+def proximityBreeder(sims, pdf):
     cdf = []
     current = 0
     for i in pdf:
         current += i
         cdf.append(current)
-    assert(cdf[-1] == 1)
+    #assert(cdf[-1] == 1)
     couples = proximityMater(sims)
     newSims = []
     for couple in couples:
@@ -58,16 +61,22 @@ def simpleProximityBreeder(sims):
                 break
         newSims += [createSimFromParents(*couple) for i in range(childrenNo)]
     return newSims
+
+
     
 def constantBreeder(sims):
     couples = proximityMater(sims)
     newSims = []
     for couple in couples:
-        childrenNo = 3
+        childrenNo = 2
         newSims += [createSimFromParents(*couple) for i in range(childrenNo)]
     return newSims
 
 def proximityMater(sims):
+    """
+    Breeds those male-female pairs which are the closest on the surface of the sphere. The algorithm is greedy, in a sense that the smallest distance couple is guaranteed
+    to be together, after which they're both removed from the set of possible couples, and the mating continues with the next smallest distance couple.
+    """
     proximityPossibleCouples = []
     takenSims = {}
     for possibleCouple in generatePossibleCouples(sims):
@@ -114,6 +123,10 @@ def simsFrame(sims = None, populationSize = 0, mutator = None, breeder=None, mig
 def wandererMigrator(sims):
     for sim in sims:
         moveWanderer(sim)
+        
+def homebodyMigrator(sims):
+    for sim in sims:
+        moveHomebody(sim)
 
 def serialiseSim(sim, first = False, last = False):
     shallowCopyNoParents = {}
@@ -145,7 +158,25 @@ def generateToyPopulation(fileObj):
        return nextFrame(migrator=wandererMigrator, breeder=simpleProximityBreeder)
     generatePopulation(fileObj, 3, firstGeneration, nextGeneration)
 
+def generatePopulationPure(generationNo, firstGeneration, nextGeneration):
+    """
+    Population is generated using functions firstGeneration and nextGeneration. Simulation is continued for generationNo discrete generations, generationNo must be greater than 1.
+    For a good example usage look at the implementation of generateToyPopulation, especially how to define firstGeneration and nextGeneration.
+    """    
+    sims, nextFrame = firstGeneration()
+    yield sims
+    for i in range(generationNo):
+        sims, nextFrame = nextGeneration(nextFrame)
+        yield sims
+
 def generatePopulation(fileObj, generationNo, firstGeneration, nextGeneration):
+    allSims = generatePopulationPure(generationNo, firstGeneration, nextGeneration)
+    writePopulation(fileObj, allSims)
+    
+def writePopulation(fileObj, generations):
+    """
+    Writes json representation of a generated population to a file.
+    """
     def writeAllSims(sims, first=False, last=False):
         firstSim = first
         if firstSim:
@@ -154,12 +185,13 @@ def generatePopulation(fileObj, generationNo, firstGeneration, nextGeneration):
             if not firstSim:
                 fileObj.write(",\n")
             firstSim = False
-            json.dump(serialiseSim(sim, first=first, last=last), fileObj)
-    sims, nextFrame = firstGeneration()
+            json.dump(serialiseSim(sim, first=first, last=last), fileObj) 
+    sims = next(generations)
     first = True
-    for i in range(generationNo):
+    for nextSims in generations:
         writeAllSims(sims, first=first)
         first = False
-        sims, nextFrame = nextGeneration(nextFrame)
+        sims = nextSims
     writeAllSims(sims, last=True)
     fileObj.write("]")
+    pass
