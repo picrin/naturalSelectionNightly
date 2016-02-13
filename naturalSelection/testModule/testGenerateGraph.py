@@ -3,6 +3,7 @@ from ..generateGraph import *
 from ..pointPicking import *
 from ..sims import *
 import math
+import sys
 import random
 
 def make4Sims():
@@ -56,8 +57,40 @@ class TestGenerateGraph(unittest.TestCase):
         menNo = len([sim for sim in sims if sim["isMale"]])
         womenNo = len([sim for sim in sims if sim["isMale"] == False])
         couples = proximityMater(sims)
-        self.assertTrue(min(womenNo, menNo), len(couples))
-    def testMater3(self):
-        # I suggest this test mates the same population twice, second time after reshuffle, and checks the result is the same.
-        pass
-        
+        self.assertTrue(min(womenNo, menNo) == len(couples))
+    def testFitnessCDF(self):
+        sims = [{"absoluteFitness": 1.0}, {"absoluteFitness": 2.0}]
+        cdf = constructFitnessCDF(sims)
+        for pair in zip(cdf, [1.0, 3.0]):
+            self.assertTrue(pair[0], pair[1])
+        self.assertTrue(sampleFromFitnessCDF(cdf, 0.8/3) == 0)
+        self.assertTrue(sampleFromFitnessCDF(cdf, 1.2/3) == 1)
+        self.assertTrue(sampleFromFitnessCDF(cdf, 2.9/3) == 1)
+        self.assertTrue(sampleFromFitnessCDF(cdf, 3.0/3) == 1)
+    def testFitnessBreeder(self):
+        size = 4000
+        totalSize = size*2
+        unsuccessfulSims = [createRandomlyPositionedSim() for i in range(size)]
+        successfulSims = [createRandomlyPositionedSim() for i in range(size)]
+        successfulSimsIDs = [sim["uid"] for sim in successfulSims]
+        unsuccessfulSimsIDs = [sim["uid"] for sim in unsuccessfulSims]
+        for sim in successfulSims:
+            makeHomozygous(sim)
+        for sim in unsuccessfulSims:
+            cancelFeature(sim)
+        sims = successfulSims + unsuccessfulSims
+        for sim in sims:
+            makeDominant(sim)
+        nextGeneration = fitnessBreeder(sims, 2.0, len(sims))
+        successfulParents = 0
+        unsuccessfulParents = 0
+        self.assertTrue(len(nextGeneration) == totalSize)
+        for sim in nextGeneration:
+            if sim["parentA"]["uid"] in successfulSimsIDs or sim["parentB"]["uid"] in successfulSimsIDs:
+                successfulParents += 1
+            if sim["parentA"]["uid"] in unsuccessfulSimsIDs or sim["parentB"]["uid"] in unsuccessfulSimsIDs:
+                unsuccessfulParents += 1
+            
+        print("\nsuccessfulParents", successfulParents/float(totalSize))
+        print("\nunsuccessfulParents", unsuccessfulParents/float(totalSize))
+       

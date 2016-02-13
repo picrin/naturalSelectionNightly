@@ -10,7 +10,7 @@ upperBoundX = list(range(0, 1500, 10))
 upperBoundY = [math.log(500 * i + 1000) for i in upperBoundX]
 
 prediction = list(range(1, 1000, 10))
-predictionY = [math.log(i, 2) for i in prediction]
+predictionY = [math.log(i, 2)  for i in prediction]
 
 for result in results:
    finalSize.append(result['sizePerGeneration'][-1])

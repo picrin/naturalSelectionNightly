@@ -13,10 +13,18 @@ def changeUID(newUID):
 
 def createSim():
     global uid
-    sim = {"genotype": createGenotype(), "pos": (None, None), "parentA": None, "parentB": None, "isMale": None, "uid": uid}
+    sim = {"genotype": createGenotype(), "pos": (None, None), "parentA": None, "parentB": None, "isMale": None, "uid": uid, "absoluteFitness": 1, "relativeFitness": 1}
     uid += 1
     return sim
-        
+
+
+def adjustAbsoluteFitness(sim, ratio):
+    """
+    Adjusts absolute fitness if sim has a feature. If ratio is > 1 the feature increases fitness. If it is < 1 the feature decreases fitness.
+    """
+    if hasFeature(sim):
+        sim["absoluteFitness"] *= ratio
+
 def makeDominant(sim):
     sim["genotype"]["isDominant"] = True
     return sim
@@ -33,6 +41,18 @@ def hasFeature(sim):
         return genotype["hasCopy1"] or genotype["hasCopy2"]
     else:
         return genotype["hasCopy1"] and genotype["hasCopy2"]
+
+def makeHomozygous(sim):
+    sim["genotype"]["hasCopy1"] = True
+    sim["genotype"]["hasCopy2"] = True
+
+def makeHeterozygous(sim):
+    sim["genotype"]["hasCopy1"] = True
+    sim["genotype"]["hasCopy2"] = False
+
+def cancelFeature(sim):
+    sim["genotype"]["hasCopy1"] = False
+    sim["genotype"]["hasCopy2"] = False
 
 def createRandomlyPositionedSim():
     sim = createSim()
@@ -52,6 +72,8 @@ def setRandomGeneCopy(sim, val):
         sim["genotype"]["hasCopy2"] = val
 
 def createSimFromParents(parentA, parentB):
+    if "parentA" not in parentA or "parentB" not in parentB:
+        raise ValueError("a parent must be human")
     if parentA["isMale"] == parentB["isMale"]:
         raise ValueError("can't breed sims of the same gender")
     if parentA["isMale"]:

@@ -2,7 +2,7 @@ from .pointPicking import *
 from .sims import *
 from .pointPicking import *
 import random, bisect
-import json
+import json, sys
 
 def trackSim(sim, allSims):
     allSims.append(sim)
@@ -62,8 +62,6 @@ def proximityBreeder(sims, pdf):
         newSims += [createSimFromParents(*couple) for i in range(childrenNo)]
     return newSims
 
-
-    
 def constantBreeder(sims):
     couples = proximityMater(sims)
     newSims = []
@@ -72,21 +70,70 @@ def constantBreeder(sims):
         newSims += [createSimFromParents(*couple) for i in range(childrenNo)]
     return newSims
 
-def proximityMater(sims):
+def slimAdvantageFitnessBreeder(sims):
+    return fitnessBreeder(sims, 1.05, len(sims))
+
+def constructFitnessCDF(sims):
     """
-    Breeds those male-female pairs which are the closest on the surface of the sphere. The algorithm is greedy, in a sense that the smallest distance couple is guaranteed
-    to be together, after which they're both removed from the set of possible couples, and the mating continues with the next smallest distance couple.
+    Creates a python list representing a (discrete) cumulative distribution function, which can be used to sample sims with probability relative to their fitness.
     """
+    cdf = [sims[0]["absoluteFitness"]]
+    for sim in sims[1:]:
+        cdf.append(cdf[-1] + sim["absoluteFitness"])
+    return cdf
+
+def sampleFromFitnessCDF(cdf, randomFloat0to1):
+    return bisect.bisect_left(cdf, randomFloat0to1 * cdf[-1])
+ 
+def fitnessBreeder(sims, ratio, reproductionCap):
+    """
+    Breeder based on the the idea introduced in [TODO peng's paper]. The pdf of offspring is binomial. The sampling is based on relative fitness. Number of individuals is kept constant.
+    """
+    for sim in sims:
+        adjustAbsoluteFitness(sim, ratio)
+    nextSims = []
+    while(len(nextSims) < reproductionCap):
+        cdf = constructFitnessCDF(sims)
+        random0to1 = random.uniform(0, 1)
+        toReproduce = sampleFromFitnessCDF(cdf, random0to1)
+        simFrom = sims[toReproduce]
+        coupleGen = coupleGeneratorFrom(simFrom)
+        allPossibleCouples = proximityCoupling(coupleGen, sims)
+        closestCouple = allPossibleCouples[0][1]
+        nextSim = createSimFromParents(*closestCouple)
+        nextSims.append(nextSim)
+    return nextSims
+
+def coupleGeneratorFrom(simFrom):
+    def generator(sims):
+        return generatePossibleCouplesFrom(simFrom, sims)
+    return generator
+
+def generatePossibleCouplesFrom(simFrom, sims):
+    for sim in sims:
+        if sim["isMale"] != simFrom["isMale"]:
+            yield simFrom, sim
+
+
+def proximityCoupling(coupleGenerator, sims):
     proximityPossibleCouples = []
-    takenSims = {}
-    for possibleCouple in generatePossibleCouples(sims):
+    for possibleCouple in coupleGenerator(sims):
         positionA = possibleCouple[0]["pos"]
         positionB = possibleCouple[1]["pos"]
         howClose = sphereDistance(positionA, positionB)
         proximityPossibleCouples.append([howClose, possibleCouple,])
     proximityPossibleCouples.sort(key = lambda n: n[0])
-    actualCouples = []
+    return proximityPossibleCouples
+    
 
+def proximityMater(sims):
+    """
+    Breeds those male-female pairs which are the closest on the surface of the sphere. The algorithm is greedy, in a sense that the smallest distance couple is guaranteed
+    to be together, after which they're both removed from the set of possible couples, and the mating continues with the next smallest distance couple.
+    """
+    actualCouples = []
+    takenSims = {}
+    proximityPossibleCouples = proximityCoupling(generatePossibleCouples, sims)
     for distanceCouple in proximityPossibleCouples:
         couple = distanceCouple[1]
         if couple[0]["uid"] not in takenSims and couple[1]["uid"] not in takenSims:

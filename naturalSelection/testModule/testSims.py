@@ -31,6 +31,25 @@ class TestSims(unittest.TestCase):
         self.assertTrue(not hasFeature(simA))
         simA["genotype"]["hasCopy2"] = False
         self.assertTrue(not hasFeature(simA))
+    def testAdjustFitness(self):
+        simA = createSim()
+        makeRecessive(simA)
+        makeHeterozygous(simA)
+        adjustAbsoluteFitness(simA, 1.05)
+        self.assertAlmostEquals(simA["absoluteFitness"], 1.00)
+
+        simB = createSim()
+        makeRecessive(simB)
+        makeHomozygous(simB)
+        adjustAbsoluteFitness(simB, 1.05)
+        self.assertAlmostEquals(simB["absoluteFitness"], 1.05)
+        
+        simC = createSim()
+        makeDominant(simC)
+        makeHeterozygous(simC)
+        adjustAbsoluteFitness(simC, 1.05)
+        self.assertAlmostEquals(simC["absoluteFitness"], 1.05)
+
     def testIterativeHomebody(self):
         """ Impressive, I can get 10^-14 accuracy of the point staying
         within the radius of the unit sphere, even when accumulating
