@@ -2,6 +2,7 @@ import unittest
 from ..generateGraph import * 
 from ..pointPicking import *
 from ..sims import *
+from ..utils import *
 import math
 import sys
 import random
@@ -68,8 +69,32 @@ class TestGenerateGraph(unittest.TestCase):
         self.assertTrue(sampleFromFitnessCDF(cdf, 2.9/3) == 1)
         self.assertTrue(sampleFromFitnessCDF(cdf, 3.0/3) == 1)
     def testFitnessBreeder(self):
-        size = 4000
-        totalSize = size*2
+        """
+        Tests that the results of fitness breeder are within 5 sigma around mean.
+        The feature boosts absolute fitness by the factor of 2.0
+        The distribution is assumed to be binomial with the following probabilities:
+        A = p(both parents have feature) = 2/3 * 1/2 = 1/3
+        B = p(both parents have no feature) =  1/3 * 1/2  = 1/6
+        C = p(exactly one parent has the feauture) = 2/3 * 1/2 + 1/3 * 1/2 = 1/2
+        
+        A + B + C = 1, as expected.
+        
+        D = p(at least one parent has no feature) =  C + B = 2/3
+        E = p(at least one parent has a feature) = C + A = 5/6
+        
+        we then use standard deviation result for binomial distribution, say, repeated 100 times.
+        The formula is sqrt(n(1-p)p).
+        """
+        totalSize = 100
+        size = int(totalSize/2)
+
+        D = 2.0/3
+        E = 5.0/6
+        D5sigma = sigmaBinomial(100, D, 5)
+        E5sigma = sigmaBinomial(100, E, 5)
+
+        self.assertAlmostEquals(D5sigma, 23.57, delta=0.1)
+        self.assertAlmostEquals(E5sigma, 18.6, delta=0.1)
         unsuccessfulSims = [createRandomlyPositionedSim() for i in range(size)]
         successfulSims = [createRandomlyPositionedSim() for i in range(size)]
         successfulSimsIDs = [sim["uid"] for sim in successfulSims]
@@ -90,7 +115,6 @@ class TestGenerateGraph(unittest.TestCase):
                 successfulParents += 1
             if sim["parentA"]["uid"] in unsuccessfulSimsIDs or sim["parentB"]["uid"] in unsuccessfulSimsIDs:
                 unsuccessfulParents += 1
-            
-        print("\nsuccessfulParents", successfulParents/float(totalSize))
-        print("\nunsuccessfulParents", unsuccessfulParents/float(totalSize))
-       
+        self.assertTrue(-E5sigma <= successfulParents - E*totalSize <= E5sigma)
+        self.assertTrue(-D5sigma <= unsuccessfulParents - D*totalSize <= D5sigma)
+      
