@@ -16,11 +16,6 @@ print(len(results))
 
 
 def noGenesWanderers(size, generations):
-    """
-    this gives a population, which has one sim who is a carrier of a dominant allele.
-    The population then evolves for 3 generations (achieving total of 4 generations) using the wanderer model of
-    migration and the simpleProximityBreeder.
-    """
     def firstGeneration():
        return simsFrame(populationSize = size, mutator = oneDominantAlleleMutator)
     def nextGeneration(nextFrame):

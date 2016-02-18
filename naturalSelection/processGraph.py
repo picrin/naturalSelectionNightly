@@ -32,6 +32,12 @@ def loadGraph(fileObj, fromVar=None):
     simulation = {"graph": simsGraph, "firstGeneration": first, "lastGeneration": last}
     return simulation
 
+def reinitialiseSims(simulation):
+    for simUID in simulation["graph"]:
+        sim = simulation["graph"].node[simUID]
+        sim["visitedBy"] = -1
+        sim["descendants"] = 0
+
 def countDescendants(simulation):
     def countDescendantsInner(nodeID, uid):
         node = simulation["graph"].node[nodeID]
@@ -46,6 +52,7 @@ def countDescendants(simulation):
                 countDescendantsInner(node["parentB"], uid)
     for nodeID in simulation["lastGeneration"]:
         countDescendantsInner(nodeID, nodeID)
+
 
 def MRCA(simulation):
     """
@@ -77,3 +84,4 @@ def MRCA(simulation):
         generationNo += 1
     return None
 
+#def MRCAfrom(simulation, sims)

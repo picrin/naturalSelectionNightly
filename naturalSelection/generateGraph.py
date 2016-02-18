@@ -114,7 +114,6 @@ def generatePossibleCouplesFrom(simFrom, sims):
         if sim["isMale"] != simFrom["isMale"]:
             yield simFrom, sim
 
-
 def proximityCoupling(coupleGenerator, sims):
     proximityPossibleCouples = []
     for possibleCouple in coupleGenerator(sims):
