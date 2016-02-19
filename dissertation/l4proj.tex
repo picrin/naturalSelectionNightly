@@ -4,20 +4,25 @@
 \usepackage{fancyvrb}
 \usepackage{amsthm}
 \usepackage[final]{pdfpages}
+\usepackage{hyperref}
+\usepackage[utf8]{inputenc}
+%\usepeackage{glossaries}
 
 \usepackage[style=authoryear, backend=biber]{biblatex}
 \addbibresource{l4proj.bib}
 
 \newtheorem*{quest}{Research Question}
+\newtheorem{assum}{Assumption}
 \newcommand{\Tmrca}{T\raisebox{-.4ex}{\scriptsize MRCA}}
+\newcommand{\genotype}[2]{\ensuremath{(\mathrm{#1}, \mathrm{#2})}}
 
 \newif\ifdebug
 
-\debugtrue
+\debugfalse
 
 \begin{document}
 
-\title{The effects of natural selection on the shapes of ancestry graphs}
+\title{The effects of natural selection on the shape of population graph}
 \author{Adam Kurkiewicz}
 \date{March 24, 2016}
 \maketitle
@@ -47,7 +52,11 @@
 
 \section{Context of the work}
 
-The publication of "On the Origin of Species" is generally accepted to be a founding stone of still vigorously researched field of evolutionary biology. Over the years, as the understanding of the field deepened it became clear that certain scientific questions within the field can only be answered by obtaining progress in related fields, like establishing laws governing inheritance (genetics) \parencite{mendel}, understanding the role of organic molecules in the process of inheritance (molecular biology) \parencite{watson53}, understanding population dynamics of predator-prey system using both continuous and discrete methods (mathematical biology), understanding the character of population variability at molecular level (neutral theory of molecular evolution, Markov processes) \parencite{kimura68} [something about  PAM matrices], studying of historical populations (archaeology, anthropology, linguistics) \parencite{dubois}, proposing and verifying hypotheses about populations based on quantitative evidence (statistics) [bronze age Eurasia and steppe hypothesis], modeling and simulating biological systems \textit{in silico} (systems biology), and many others.
+The publication of "On the Origin of Species" \parencite{darwin59} is generally accepted to be a founding stone of still vigorously researched field of evolutionary biology. Over the years, as the understanding of the field deepened, it became clear that certain scientific questions within the field can only be answered by obtaining progress in related fields, like establishing laws governing inheritance (genetics) \parencite{mendel}, understanding the role of organic molecules in the process of inheritance (molecular biology) \parencite{watson53}, understanding population dynamics of predator-prey system using both continuous and discrete methods (mathematical biology), understanding the character of population variability at molecular level (neutral theory of molecular evolution, Markov processes) \parencite{kimura68} \parencite{dayhoff73}, studying of historical populations (archaeology, anthropology, linguistics) \parencite{dubois}, proposing and verifying hypotheses about populations based on quantitative evidence (statistics) \parencite{bronzeAgeEurasia}, modeling and simulating biological systems \textit{in silico} (systems biology), and many others.
+
+\ifdebug
+  Next paragraph does not have to be included in the final version of the dissertation.
+\fi
 
 While the research presented in this work falls within the realm of computational biology, one should understand the difficulty of both undertaking the research in the field and presenting the results, namely, the broadness of topics and tools involved, which need to be understood and taken into account if the research is to be of any significance. A part of the struggle in communication is one of vocabulary, as each of the related fields uses specialized jargon, and researches with expertise in one field might not understand the other fields' jargon. To ease this difficulty in the beginning of each chapter we shall include a glossary of terminology in use.
 
@@ -55,14 +64,10 @@ While the research presented in this work falls within the realm of computationa
 The scientific question that we will try to answer in this piece of work is directly connected with evolution by natural selection and perhaps might have even occurred to Darwin himself:
 
 \begin{quest}[First Attempt]
-How much time does it take for an advantageous feature in an individual to spread across entire population?
+How much time does it take for an advantageous trait in an individual to spread across entire population?
 \end{quest}
 
-\ifdebug
-  Next paragraph doesn't have to be included in the final version of the dissertation.
-\fi
-
-As we will approach the question on the grounds of computational biology, it is perhaps useful to rephrase it in a language more familiar to computer science, which will also serve us the purpose of disambiguating the question's meaning. Firstly, let us introduce the notion of the \textbf{population graph}, which we will understand to be a directed acyclic graph, with vertices representing all individuals ever alive and directed edges representing the parent-child relationship between individuals. Additionally, each vertex will be labeled with the feature-status (present, not present) of the individual it represents. For any point in time all individuals alive at that point will be referred to as "population at time $t$", or simply "population", if the time can be inferred from the context. Representing individuals as a graph has an advantage of allowing us to use a rich set of tools for analysing the shape of the population graph, such as graph centrality measures, or even simply most recent common ancestry of sets of vertices.
+As we will approach the question on the grounds of computational biology, it is perhaps useful to rephrase it in a language more familiar to computer science, which will also serve us the purpose of disambiguating the question's meaning. Firstly, let us introduce the notion of the \textbf{population graph}, which we will understand to be a directed acyclic graph, with vertices representing all individuals ever alive and directed edges representing the parent-child relationship between individuals. Additionally, each vertex will be labelled with complete information on individual's traits. For any point in time all individuals alive at that point will be referred to as "population at time $t$", or simply "population", if the time can be inferred from the context. Representing individuals as a graph has an advantage of allowing us to use a rich set of tools for analysing the shape of the population graph, such as graph centrality measures, or even simply most recent common ancestry of sets of vertices.
 
 Finally, this allows us to reword the research question:
 
@@ -70,18 +75,78 @@ Finally, this allows us to reword the research question:
 How does natural selection affect the shape of the population graph?
 \end{quest}
 
-Even after this linguistic juggling the question remains pretty vague. We never specify any parameters of population at any time $t$, such as the mating scheme, migration, competition for resource, survivability, number of offspring, etc. These parameters will be discussed in chapter 2, after we will have decided on appropriate methodology in chapter 1. We will discuss the architecture of the computer program which constitues the solution, and is on its own a valuable cotribution to the field in chapter 3. The results will be presented in chapter 2 and the conclusions will be drawn in chapter 4.
+Even after this linguistic juggling the question remains pretty vague. We never specify any parameters of population at any time $t$, such as the mating scheme, migration, competition for resource, survivability, number of offspring, etc. These parameters will be discussed in chapter \ref{research}, along with the appropriate methodology, to which we will prepare ground in chapter \ref{review}. We will discuss the architecture of the computer program which constitutes the solution, and is on its own a valuable contribution to the field in chapter \ref{practical}. The results will be presented in chapter \ref{practical} and the conclusions will be drawn in chapter \ref{conclusion}.
 
-\chapter{Review of the field}
-This should be a critical survey of the relevant literature, adhering to normal academic conventions in citing references, etc.
+\chapter{Review of the field}\label{review}
 
-\chapter{Report of research work}
+\ifdebug
+  This should be a critical survey of the relevant literature, adhering to normal academic conventions in citing references, etc. Here I need to discuss coalescent method vs. forward-in time method vs. sample-based methods.
+
+explain trait, explain mendelian genetics, explain homozygous, heterozygous, dominant, sweep, polymorphism example of polymorphism: impression of bitterness while eating brussel sprouts, linkage equilibrium, panmictic population, allele, epigenetics, probability density function.
+\fi
+
+\section{Basic inheritance}
+
+Presented work is by no means the first attempt at quantitative study of population genetics. What follows is a review of the most relevant achievements in the field.
+
+\subsection{Early days}
+Ever since three European scientist simultaneously and independently rediscovered \& experimentally confirmed Gregor Mendel's theory of inheritance [find the original works of DeVries, Correns and Tscherma, Roberts, H. F. Plant Hybridization before Mendel. Princeton: Princeton University Press, 1929.], the interplay between Mendelian Inheritance and Darwinian Evolution has been hotly debated. One claim popular at the time has fallaciously asserted that Mendelian Genetics cannot be a correct model of trait inheritance [cite this guy whose name starts with U]. The reasoning at the core of the claim was that dominant alleles over time sweep the entire population, thus eliminating variation within the population, rendering evolution by natural selection impossible. This misconception was debunked in a very short letter to the editor of "Science" by famous English number theorist \cite{hardy08}. The letter is a truly master example of a presentation of non-trivial mathematical thought in a manner both rigorous and understandable, even to non-experts. We shall replicate Hardy's argument, for it will become an important tool through the rest of the work. Before we do, let us recall Mendel's laws of inheritance.
+
+\subsection{Mendelian Inheritance}
+
+Let us start by assuming, without loss of generality, that our population is composed of  briefly sketching a relevant subset of the laws of Mendelian Inheritance. A more comprehensive reference can be found in an annotated English translation of the original work of Mendel by \cite{mendel}.
+
+Firstly, we will be acting under the assumption that each animal characteristic (trait) is either present, or not present in a given organism because of:
+\begin{assum}\label{genotypes}
+  possession by this organism of one, two or none copies of a gene encoding this characteristic.
+\end{assum}
+
+\begin{assum}\label{dominance}
+  the mode of expression of the characteristic, which can be either dominant or recessive.
+\end{assum}
+
+We have to remark that these assumptions may not be obviously true for certain seemingly continuous, partially environment-dependent characteristics such as height, weight or individual's position in the autism spectrum. However experiments using various methods have consistently asserted that ~80\% of human height is inheritable \parencite{heightTwins, heightJustSiblings}. Although the challenge of identifying all genes affecting height is still open, recent progress using statistical technique called Genome Wide Association Study (GWAS) identified over 40 genes, which contribute 5 pp. towards total height heritability. To play devil's advocate further, it has been recently established that important traits can be acquired and inherited by non-genetic means [cite palm oil study, cite the mouse study, cite Auchwitz study], giving rise to the field of Epigenetics. We shall consider both environmental and epigenetic factors to be outside of the scope of this research. A curious reader is referred to an accessible, popular science discussion of the topic of GWAS, height inheritance and epigenetics by \textcite{GWASDiscussion}. A concerned reader should find assurance in that a great many traits do obey Mendelian's Inheritance straightforwardly, a comprehensive list given by [find some comprehensive list]. 
+
+Before we proceed let us recall the following, standard notation: if an allele encoding a trait is determined to be dominant we will represent it with capital letter, e.g. $\mathrm{A}$. In such case a lack of trait will be considered recessive and be denoted as $\mathrm{a}$. Under the assumption \ref{genotypes}, we will consider all three possible genotypes: \genotype{A}{A} -- homozygous dominant, \genotype{A}{a} -- heterozygous and \genotype{a}{a} -- homozygous recessive. Of these the first two the genotypes \genotype{A}{A} and \genotype{A}{a} will result in an individual possessing the characteristic. An individual with the last genotype \genotype{a}{a} will not exhibit the trait. Analogously, one can consider a trait inherited recessively, and in such case the above description is true when "trait" is mutually exchanged with "lack of trait", "not exhibit the trait" with "exhibit the trait", etc.
+
+Further, we will assume that
+\begin{assum}\label{offspring}
+  in offspring each of the two alleles present comes from the parents, precisely one from the mother and one from the father. Each of the parent's two alleles has a 50\% chance of being inherited.
+\end{assum}
+We can use our assumptions \ref{genotypes}, \ref{dominance}, \ref{offspring} to work out that in a specific case of breeding two heterozygous individuals, an \genotype{A}{a} mother and an \genotype{A}{a} father, each individual offspring will have either of 3 possible genotypes with probabilities $\frac{1}{4}$ for \genotype{A}{A}, $\frac{1}{2}$ for \genotype{A}{a} and $\frac{1}{4}$ for \genotype{a}{a}. Table 1 gives all possible outcomes of breeding all possible genotypes involving one characteristic along with corresponding probabilities. If the desired mode of inheritance is dominant, the reader can interpret \genotype{A}{a} and \genotype{A}{A} as trait-positive and \genotype{a}{a} as trait-negative. For the recessive case, \genotype{a}{a} is trait-positive and both \genotype{A}{A} and \genotype{A}{a} are trait-negative.
+
+Finally, we have to remark that the assumption \ref{offspring} may not be correct in a rare cases of sex-linked characteristics (e.g. colour-blindess). These will not be focused on in this research.
+
+\subsection{Hardy-W principle}
+
+Let us begin by assuming that
+Ingenious insight of Hardy is in observing that there exists on the space of possible genotypes can be considered stable, whereas others, although unstable will eventually converge to a stable configuration. To define the exact meaning of "stable" let us write in full generality a mass density function for any infinite, randomly breeding population
+
+[here we need to give a proof that if the ratios are p:2q:r, then eventually ]
+ 
+\subsection{Work of Fisher}
+
+\section{Coalescent method}
+
+ all but the most simple models of the coalescent method , which can make it prohibitively
+
+\section{Forward-Time Modelling}
+
+for this let us echo concerns raised by \cite{peng09}
+
+\section{Population graph}
+
+Write about Rohde and Olsen's work. 
+
+\chapter{Report of research work}\label{research}
 This should bring out the insights and new ideas produced by the review and may continue to suggest further practical work, which would test these ideas. Most importantly, the report should clearly state the overall value of the work which has been done - this should not be lost in a welter of detail.
 
-\chapter{Report of practical work}
+Here I need to discuss the 
+
+\chapter{Report of practical work}\label{practical}
 This section should summarize the practical work done and its results, concentrating on any unusual or original features. Enough detail should be included to assure the reader that the work has been professionally and competently done, and that the results are trustworthy. Any design features, algorithms and data structures of special interest should be described. Documentation to full software engineering standards is not required.
 
-\chapter{Conclusion}
+\chapter{Conclusion}\label{conclusion}
 This section should summarize the work and its significance, comparing practical results with theoretical expectations where appropriate. Suggestions for possible extensions, or research projects arising from the work, may also be included here.
 
 \chapter{References}
