@@ -1,14 +1,14 @@
 from naturalSelection import *
-initalSize = 100
+initialSize = 1000
 step = 100
-steps = 10
+steps = 0
 repetitions = 5
 results = []
 
 def estimateGenerations(size):
     return int(math.ceil(math.log(500 * size + 1000)))
 
-for size in range(100, steps * step + 1, step):
+for size in range(initialSize, initialSize + steps * step + 1, step):
     for i in range(repetitions):
         print(estimateGenerations(size))
         results.append({"initialSize": size, "sizePerGeneration": None, "MRCA": None, "filename": None, "generations": estimateGenerations(size)})

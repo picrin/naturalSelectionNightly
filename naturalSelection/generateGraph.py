@@ -36,12 +36,12 @@ def simpleProximityBreeder(sims):
     it won't lead to quick exponential growth for large populations, and for small populations it makes
     the population less likely to die off due to random male/female imbalances.
     """
-    f0 = 0.17
+    f0 = 0.18
     f1 = 0.1
     f2 = 0.4
     f3 = 0.2
     f4 = 0.1
-    f5 = 0.03
+    f5 = 0.02
     pdf = [f0, f1, f2, f3, f4, f5]
     return proximityBreeder(sims, pdf)
     

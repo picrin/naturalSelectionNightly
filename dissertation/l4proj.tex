@@ -6,7 +6,9 @@
 \usepackage[final]{pdfpages}
 \usepackage{hyperref}
 \usepackage[utf8]{inputenc}
+\usepackage{listings}
 %\usepeackage{glossaries}
+
 
 \usepackage[style=authoryear, backend=biber]{biblatex}
 \addbibresource{l4proj.bib}
@@ -18,7 +20,10 @@
 
 \newif\ifdebug
 
-\debugfalse
+\debugtrue
+
+\lstset{basicstyle=\ttfamily\footnotesize,breaklines=true}
+
 
 \begin{document}
 
@@ -75,7 +80,7 @@ Finally, this allows us to reword the research question:
 How does natural selection affect the shape of the population graph?
 \end{quest}
 
-Even after this linguistic juggling the question remains pretty vague. We never specify any parameters of population at any time $t$, such as the mating scheme, migration, competition for resource, survivability, number of offspring, etc. These parameters will be discussed in chapter \ref{research}, along with the appropriate methodology, to which we will prepare ground in chapter \ref{review}. We will discuss the architecture of the computer program which constitutes the solution, and is on its own a valuable contribution to the field in chapter \ref{practical}. The results will be presented in chapter \ref{practical} and the conclusions will be drawn in chapter \ref{conclusion}.
+Even after this linguistic juggling the question remains pretty vague. We never specify any parameters of population at any time $t$, such as the mating scheme, migration, competition for resource, survivability, number of offspring, etc. These parameters will be discussed in chapter \ref{research}, along with the appropriate methodology, to which we will prepare ground in chapter \ref{review}. We will discuss the architecture of the computer program which constitutes the solution, asdf and is on its own a valuable contribution to the field in chapter \ref{practical}. The results will be presented in chapter \ref{practical} and the conclusions will be drawn in chapter \ref{conclusion}.
 
 \chapter{Review of the field}\label{review}
 
@@ -94,7 +99,7 @@ Ever since three European scientist simultaneously and independently rediscovere
 
 \subsection{Mendelian Inheritance}
 
-Let us start by assuming, without loss of generality, that our population is composed of  briefly sketching a relevant subset of the laws of Mendelian Inheritance. A more comprehensive reference can be found in an annotated English translation of the original work of Mendel by \cite{mendel}.
+Let us start by briefly sketching a relevant subset of the laws of Mendelian Inheritance. A more comprehensive reference can be found in an annotated English translation of the original work of Mendel by \cite{mendel}.
 
 Firstly, we will be acting under the assumption that each animal characteristic (trait) is either present, or not present in a given organism because of:
 \begin{assum}\label{genotypes}
@@ -105,7 +110,7 @@ Firstly, we will be acting under the assumption that each animal characteristic 
   the mode of expression of the characteristic, which can be either dominant or recessive.
 \end{assum}
 
-We have to remark that these assumptions may not be obviously true for certain seemingly continuous, partially environment-dependent characteristics such as height, weight or individual's position in the autism spectrum. However experiments using various methods have consistently asserted that ~80\% of human height is inheritable \parencite{heightTwins, heightJustSiblings}. Although the challenge of identifying all genes affecting height is still open, recent progress using statistical technique called Genome Wide Association Study (GWAS) identified over 40 genes, which contribute 5 pp. towards total height heritability. To play devil's advocate further, it has been recently established that important traits can be acquired and inherited by non-genetic means [cite palm oil study, cite the mouse study, cite Auchwitz study], giving rise to the field of Epigenetics. We shall consider both environmental and epigenetic factors to be outside of the scope of this research. A curious reader is referred to an accessible, popular science discussion of the topic of GWAS, height inheritance and epigenetics by \textcite{GWASDiscussion}. A concerned reader should find assurance in that a great many traits do obey Mendelian's Inheritance straightforwardly, a comprehensive list given by [find some comprehensive list]. 
+We have to remark that these assumptions may not be obviously true for certain seemingly continuous, partially environment-dependent characteristics such as height, weight or individual's position in the autism spectrum. However experiments using various methods have consistently asserted that ~80\% of human height is inheritable \parencite{heightTwins, heightJustSiblings}. Although the challenge of identifying all genes affecting height is still open, recent progress using a cross-discipline technique called Genome Wide Association Study (GWAS) identified over 40 genes, which contribute 5 percent points towards total height heritability. To play devil's advocate further, it has been recently established that important traits can be acquired and inherited by non-genetic means [cite palm oil study, cite the mouse study, cite Auchwitz study], giving rise to the field of Epigenetics. We shall consider both environmental and epigenetic factors to be outside of the scope of this research. A curious reader is referred to an accessible, popular science discussion of the topic of GWAS, height inheritance and epigenetics by \textcite{GWASDiscussion}. A concerned reader should find assurance in that a great many traits do obey Mendelian's Inheritance straightforwardly, a comprehensive list given by [find some comprehensive list].
 
 Before we proceed let us recall the following, standard notation: if an allele encoding a trait is determined to be dominant we will represent it with capital letter, e.g. $\mathrm{A}$. In such case a lack of trait will be considered recessive and be denoted as $\mathrm{a}$. Under the assumption \ref{genotypes}, we will consider all three possible genotypes: \genotype{A}{A} -- homozygous dominant, \genotype{A}{a} -- heterozygous and \genotype{a}{a} -- homozygous recessive. Of these the first two the genotypes \genotype{A}{A} and \genotype{A}{a} will result in an individual possessing the characteristic. An individual with the last genotype \genotype{a}{a} will not exhibit the trait. Analogously, one can consider a trait inherited recessively, and in such case the above description is true when "trait" is mutually exchanged with "lack of trait", "not exhibit the trait" with "exhibit the trait", etc.
 
@@ -118,13 +123,14 @@ We can use our assumptions \ref{genotypes}, \ref{dominance}, \ref{offspring} to 
 Finally, we have to remark that the assumption \ref{offspring} may not be correct in a rare cases of sex-linked characteristics (e.g. colour-blindess). These will not be focused on in this research.
 
 \subsection{Hardy-W principle}
-
-Let us begin by assuming that
-Ingenious insight of Hardy is in observing that there exists on the space of possible genotypes can be considered stable, whereas others, although unstable will eventually converge to a stable configuration. To define the exact meaning of "stable" let us write in full generality a mass density function for any infinite, randomly breeding population
+Let us define a distribution of a genotype in the population as the ratio of dominant homozygotes to heterozygotes to recessive homozygotes, symbolically $p:2q:r$. 2q appears in the ratio to ease the computation.
+Ingenious insight of Hardy is in observing that there are $p:2q:r$, which can be considered stable, whereas others, although unstable will eventually converge to a stable configuration. To define the exact meaning of stable asdasd let us write in full generality a mass density function for any infinite, randomly breeding population
 
 [here we need to give a proof that if the ratios are p:2q:r, then eventually ]
  
 \subsection{Work of Fisher}
+
+\subsection{Branching Processes}
 
 \section{Coalescent method}
 
@@ -136,7 +142,7 @@ for this let us echo concerns raised by \cite{peng09}
 
 \section{Population graph}
 
-Write about Rohde and Olsen's work. 
+Write about Rohde and Olsen's work. In particular, write about migration around various islands. Discuss the use of MRCA and IA.
 
 \chapter{Report of research work}\label{research}
 This should bring out the insights and new ideas produced by the review and may continue to suggest further practical work, which would test these ideas. Most importantly, the report should clearly state the overall value of the work which has been done - this should not be lost in a welter of detail.
@@ -144,7 +150,67 @@ This should bring out the insights and new ideas produced by the review and may 
 Here I need to discuss the 
 
 \chapter{Report of practical work}\label{practical}
+\ifdebug
 This section should summarize the practical work done and its results, concentrating on any unusual or original features. Enough detail should be included to assure the reader that the work has been professionally and competently done, and that the results are trustworthy. Any design features, algorithms and data structures of special interest should be described. Documentation to full software engineering standards is not required.
+
+glossary locus, loci, polyploid, chromosome, DAG, extension modules
+
+\fi
+\section{Natural Selection Framework}
+An important contribution of this research work is an implementation of a forward-time population modeling framework. The framework is then used to investigate the research question that we're interested in by focusing on particular population models of our interest. However, the framework does not force its users into any particular choice of the model. A wide range of real-life populations can be modeled by implementing appropriate mutation, breeding, mating, natural selection, migration and inheritance schemes. The schemes are implemented as python functions, and can be glued together using the framework's API into a full population model. This approach is not dissimilar from [cite simuPOP], a particularly successful forward-time simulation framework, which has been used extensively to model [give a list of things it's been used for]. Let us discuss the design of the framework focusing on similarities and differences with simuPOP.
+
+\subsection{High-Level overview}
+The central unit of any simulation in the framework is a "sim". Sims are computational abstractions of biological individuals. Sims are assigned partners in accordance with a mating scheme, can sexually reproduce with other sims of opposite sex, and produce offspring in accordance with a breeding scheme. Both mating and breeding schemes can be chosen from any provided by the framework or be user-defined. Some mating and breeding schemes are capable of taking into account the individual's relative fitness and therefore can be used to get insights into the process of natural selection. Sims live on the surface of a unit sphere. Each sim after birth is assigned the position of its female parent. After birth and before mating and breeding each sim migrates in accordance with a specified migration scheme. Each sim possess a genome, which is an encoding of that sim's genes. The set of all sims in the simulation forms the set of vertices $V$ in the population graph $G_{p} = (V, E)$. A pair of sims $(u, v)$ belongs to the set of edges $E$ of $G_{p}$ if the sim $u$ is a parent of the sim $v$. It is easily noticed that $G_{p}$ is a Directed Acyclic Graph (DAG), as no sim can be its own ancestor. Finally sims are serialised into json format and output to hard drive for further analysis. The analysis stage consists of computing MRCA of each generation of sims in the population graph.
+
+simuPOP provides most of the same functionality, however there are significant differences between the two programs. Exact comparison is difficult, because simuPOP is mature software in constant development for over a decade, whereas the proposed framework is an effect of 7 months of part-time development.
+
+Most notably, simuPOP does not allow for graph-theoretic analysis of simulated populations, and does not support outputting population graphs into permanent storage for later analysis. Aside from the educational aspect of creating my own framework this was the main reason why the effort was undertaken.
+
+\subsection{Performance}
+
+SimuPOP achieves low memory and CPU footprint by using python's \textit{extension modules}, which allows the implementation a much more direct access to underlying hardware than pure python implementation. However, there is a significant price that simuPOP pays for this strength.
+
+Firstly, development is slowed down by higher cognitive burden put on the programmer, as C++ requires manual memory management and python's C++ API is arguably less friendly than pure python's. A reader critical of the previous statement can judge for themselves by looking at this snippet of simuPOP's source code:
+
+\begin{lstlisting}
+PyObject * genoObj = PyTuple_New(alleles.size());
+// set value
+for (size_t j = 0; j < alleles.size(); ++j)
+    PyTuple_SET_ITEM(genoObj, j, PyInt_FromLong(alleles[j]));
+return genoObj;
+\end{lstlisting}
+
+which could be equivalently expressed in pure python 
+
+\begin{lstlisting}
+genoObj = tuple(alleles)
+return genoObj    
+\end{lstlisting}
+
+Secondly, a study correlating error rates with programming languages has shown C++ programmers make more errors than python programmers: [cite error rates: macbeth.cs.ucdavis.edu/lang\_study.pdf]. These results must be treated with a pinch of salt -- correlation does not imply causation and arguably more depends on the quality of the programmer than on the quality of programming language, additionally the methodology of parsing commit messages to detect bug fixes employed by this study is rather experimental.
+
+Thirdly, the use of extension modules limits execution environment of simuPOP to Cython, whereas the framework proposed has been successfully tested both under python 2, 3 (the entire framework) pypi and jython (with exception of the graph analysis module).
+
+Let us end this note on performance by saying that the performance of the framework is satisfactory for our purpose. Timing one of the simulation scripts (with MRCA analysis) reveals that the simulation of an initial population of 1000 sims for 70 generations accomplishes in under 2 minutes on consumer grade hardware.
+
+\subsection{Genome}
+SimuPOP allows for extensive modeling of genomes, such as modeling multiple loci situated on multiple chromosomes even in polyploid organisms [cite source code: sourceforge.net/p/simupop/code/HEAD/tree/trunk/src/individual.cpp].
+
+Proposed framework takes much simpler approach consistent with our requirement of investigating a single feature, in its present form allowing for only one locus capable of containing only 2 alleles.
+
+\subsection{Migration}
+Mine is more accurate because of the unit sphere.
+
+\subsection{Mutations and Inheritance}
+
+\subsection{Natural Selection}
+
+\subsection{Generations}
+discrete generations as in simuPOP. This is unlike Rohde and Olhsen.
+
+\subsection{Mating and Breeding}
+Depending on 
+capture difficulty in random mating -> random fluctuations in population 
 
 \chapter{Conclusion}\label{conclusion}
 This section should summarize the work and its significance, comparing practical results with theoretical expectations where appropriate. Suggestions for possible extensions, or research projects arising from the work, may also be included here.
