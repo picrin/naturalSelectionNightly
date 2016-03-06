@@ -36,17 +36,23 @@ class TestProcessGraph(unittest.TestCase):
             simPosition = reverseTranslation[simID]
             for parentID in sim["parentA"], sim["parentB"]:
                 self.assertTrue(getSimByID(g, parentID)["tracers"][simPosition])
-
     def testSatQuickMRCA(self):
+        print("test sat")
         with open("satAncestryTestCase") as f:
             g = loadGraph(f)
         call = quickMRCA(g, 3, 100000)
         self.assertTrue(call == (6, 2))
     def testUnsatQuickMRCA(self):
+        print("test unsat")
         with open("unsatAncestryTestCase") as f:
             g = loadGraph(f)
         call = quickMRCA(g, 3, 100000)
         self.assertTrue(call == None)
+    def testRandomMRCA(self):
+        print("test random MRCA")
+        with open("randomAncestryTestCase") as f:
+            g = loadGraph(f)
+        call = quickMRCA(g, -1, 100000)
     def testMRCA(self):
         with open("satAncestryTestCase") as f:
             g = loadGraph(f)

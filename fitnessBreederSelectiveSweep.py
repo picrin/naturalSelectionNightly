@@ -1,7 +1,7 @@
 from naturalSelection import *
-initialSize = 200
+initialSize = 100
 generations = 700
-firstMutationAt = 10
+firstMutationAt = 100
 count = 0
 
 def SSDWFBS(size, generations):
@@ -36,7 +36,7 @@ def dominantSingleAlleleMutator(allSims):
 
 import time
 import sys
-filename = "fitnessBreederResults/checkMRCA"
+filename = "fitnessBreederResults/checkMRCASmall"
 with open(filename, "w") as result:
     writePopulation(result, SSDWFBS(initialSize, generations))
 

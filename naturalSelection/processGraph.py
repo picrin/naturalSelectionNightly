@@ -150,11 +150,19 @@ def quickMRCA(simulation, generationNo, tracersNo):
             #print(sim["tracers"])
             if all(sim["tracers"]):
                 returnGen = sim["generationNo"]
+                assert(returnGen == currentGen)
                 return simID, generationNo - returnGen
             for parentID in [sim["parentA"], sim["parentB"]]:
                 nextFrontier[parentID] = True
                 parent = getSimByID(simulation, parentID)
-                #if simID not in parent["children"]:
+                if simID in parent["children"]:
+                    #print(sim["uid"], parent["uid"])
+                    #print("*"*99)
+                    #print("sim", sim)
+                    #print("*"*99)
+                    #print("parent", parent)
+                    #print("*"*99)
+                    raise Exception("there is a problem here")
                 parent["children"].append(simID)
         cleanupTracers(simulation, oldFrontier)            
         oldFrontier = frontier

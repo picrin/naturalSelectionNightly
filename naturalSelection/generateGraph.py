@@ -242,5 +242,6 @@ def writePopulation(fileObj, generations):
         writeAllSims(sims, i, first=first)
         first = False
         sims = nextSims
+    i += 1
     writeAllSims(sims, i, last=True)
     fileObj.write("]")
