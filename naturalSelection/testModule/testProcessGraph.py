@@ -7,3 +7,50 @@ class TestProcessGraph(unittest.TestCase):
         """
         with open(".testParentChild") as f:
             g = loadGraph(f)
+    def testValidGenerationNumbers(self):
+        with open(".testParentChild") as f:
+            g = loadGraph(f)
+            self.assertTrue(len(g["generations"][0]) == 10)
+            for generationNo, generation in enumerate(g["generations"]):
+                for id in generation:
+                    simsGenerationNo = getSimByID(g, id)["generationNo"]
+                    self.assertTrue(simsGenerationNo == generationNo)
+    def testTracers(self):
+        """
+        checks if tracers of the 0th generation are set appropriately from the first generation.
+        """
+        with open("satAncestryTestCase") as f:
+            g = loadGraph(f)
+        translation, reverseTranslation = initTracers(g, g["generations"][1])
+        
+        for simID in g["generations"][1]:
+            sim = getSimByID(g, simID)
+            for parentID in sim["parentA"], sim["parentB"]:
+                getSimByID(g, parentID)["children"].append(simID)
+        
+        for parentID in g["generations"][0]:
+            computeTracer(g, parentID)
+        
+        for i, simID in enumerate(g["generations"][1]):
+            sim = getSimByID(g, simID)
+            simPosition = reverseTranslation[simID]
+            for parentID in sim["parentA"], sim["parentB"]:
+                self.assertTrue(getSimByID(g, parentID)["tracers"][simPosition])
+
+    def testSatQuickMRCA(self):
+        with open("satAncestryTestCase") as f:
+            g = loadGraph(f)
+        call = quickMRCA(g, 3, 100000)
+        self.assertTrue(call == (6, 2))
+    def testUnsatQuickMRCA(self):
+        with open("unsatAncestryTestCase") as f:
+            g = loadGraph(f)
+        call = quickMRCA(g, 3, 100000)
+        self.assertTrue(call == None)
+    def testMRCA(self):
+        with open("satAncestryTestCase") as f:
+            g = loadGraph(f)
+        _, genOld = MRCA(g)
+        _, genNew = quickMRCA(g, -1, 2**64)
+        self.assertTrue(genOld == genNew)
+

@@ -1,0 +1,28 @@
+[
+
+{"parentA": null, "isMale": 0, "parentB": null, "uid": 1, "generationNo": 0, "generation": "first", "relativeFitness": 1},
+{"parentA": null, "isMale": 0, "parentB": null, "uid": 2, "generationNo": 0, "generation": "first", "relativeFitness": 1},
+{"parentA": null, "isMale": 0, "parentB": null, "uid": 3, "generationNo": 0, "generation": "first", "relativeFitness": 1},
+{"parentA": null, "isMale": 0, "parentB": null, "uid": 4, "generationNo": 0, "generation": "first", "relativeFitness": 1},
+{"parentA": null, "isMale": 0, "parentB": null, "uid": 5, "generationNo": 0, "generation": "first", "relativeFitness": 1},
+
+{"parentA": 1, "isMale": 0, "parentB": 2, "uid": 6, "generationNo": 1, "generation": "middle", "relativeFitness": 1},
+{"parentA": 1, "isMale": 0, "parentB": 2, "uid": 7, "generationNo": 1, "generation": "middle", "relativeFitness": 1},
+{"parentA": 3, "isMale": 0, "parentB": 4, "uid": 8, "generationNo": 1, "generation": "middle", "relativeFitness": 1},
+{"parentA": 3, "isMale": 0, "parentB": 4, "uid": 9, "generationNo": 1, "generation": "middle", "relativeFitness": 1},
+{"parentA": 4, "isMale": 0, "parentB": 5, "uid": 10, "generationNo": 1, "generation": "middle", "relativeFitness": 1},
+
+{"parentA": 6, "isMale": 0, "parentB": 7, "uid": 11, "generationNo": 2, "generation": "middle", "relativeFitness": 1},
+{"parentA": 6, "isMale": 0, "parentB": 7, "uid": 12, "generationNo": 2, "generation": "middle", "relativeFitness": 1},
+{"parentA": 9, "isMale": 0, "parentB": 8, "uid": 13, "generationNo": 2, "generation": "middle", "relativeFitness": 1},
+{"parentA": 10, "isMale": 0, "parentB": 9, "uid": 14, "generationNo": 2, "generation": "middle", "relativeFitness": 1},
+{"parentA": 9, "isMale": 0, "parentB": 10, "uid": 15, "generationNo": 2, "generation": "middle", "relativeFitness": 1},
+
+{"parentA": 11, "isMale": 0, "parentB": 12, "uid": 16, "generationNo": 3, "generation": "last", "relativeFitness": 1},
+{"parentA": 13, "isMale": 0, "parentB": 14, "uid": 17, "generationNo": 3, "generation": "last", "relativeFitness": 1},
+{"parentA": 11, "isMale": 0, "parentB": 12, "uid": 18, "generationNo": 3, "generation": "last", "relativeFitness": 1},
+{"parentA": 12, "isMale": 0, "parentB": 15, "uid": 19, "generationNo": 3, "generation": "last", "relativeFitness": 1},
+{"parentA": 13, "isMale": 0, "parentB": 14, "uid": 20, "generationNo": 3, "generation": "last", "relativeFitness": 1}
+
+]
+

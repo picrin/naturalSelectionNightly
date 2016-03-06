@@ -42,7 +42,7 @@ with open(filename, "w") as result:
 
 with open(filename, "r") as result:
     simulation = loadGraph(result)
-    print(MRCA(simulation))
+    print(quickMRCA(simulation, -1, 2**64))
 #for filename in range(100):
 #    count = 0
 #    with open("fitnessBreederResults/" + str(filename), "w") as result:

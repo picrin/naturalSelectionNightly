@@ -174,7 +174,7 @@ def homebodyMigrator(sims):
     for sim in sims:
         moveHomebody(sim)
 
-def serialiseSim(sim, first = False, last = False):
+def serialiseSim(sim, generationNo, first = False, last = False):
     shallowCopyNoParents = {}
     for key in sim:
         if key not in ["parentA", "parentB"]:
@@ -184,6 +184,7 @@ def serialiseSim(sim, first = False, last = False):
                 shallowCopyNoParents[key] = sim[key]["uid"]
             else:
                 shallowCopyNoParents[key] = None
+    shallowCopyNoParents["generationNo"] = generationNo
     if first:
         shallowCopyNoParents["generation"] = "first"
     if last:
@@ -216,6 +217,9 @@ def generatePopulationPure(generationNo, firstGeneration, nextGeneration):
         yield sims
 
 def generatePopulation(fileObj, generationNo, firstGeneration, nextGeneration):
+    """
+    Generates population and serialises it into a file-like object
+    """
     allSims = generatePopulationPure(generationNo, firstGeneration, nextGeneration)
     writePopulation(fileObj, allSims)
     
@@ -223,7 +227,7 @@ def writePopulation(fileObj, generations):
     """
     Writes json representation of a generated population to a file.
     """
-    def writeAllSims(sims, first=False, last=False):
+    def writeAllSims(sims, generationNo, first=False, last=False):
         firstSim = first
         if firstSim:
            fileObj.write("[")
@@ -231,13 +235,12 @@ def writePopulation(fileObj, generations):
             if not firstSim:
                 fileObj.write(",\n")
             firstSim = False
-            json.dump(serialiseSim(sim, first=first, last=last), fileObj) 
+            json.dump(serialiseSim(sim, generationNo, first=first, last=last), fileObj)
     sims = next(generations)
     first = True
-    for nextSims in generations:
-        writeAllSims(sims, first=first)
+    for i, nextSims in enumerate(generations):
+        writeAllSims(sims, i, first=first)
         first = False
         sims = nextSims
-    writeAllSims(sims, last=True)
+    writeAllSims(sims, i, last=True)
     fileObj.write("]")
-    pass
