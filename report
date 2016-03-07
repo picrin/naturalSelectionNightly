@@ -4,7 +4,7 @@ The effect of natural selection on relatedness of populations.
 
 Description
 
-The objective of the project is to research the effect of natural selection on populations by means of computer simulations. Primary measure of relatedness is time, in generations, to the Most Recent Common Ancestor of individuals alive at the the end of a simulation.
+The objective of the project is to research the effect of natural selection on relatedness of individuals in a population by means of computer simulations. Primary measure of relatedness is time, in generations, to the Most Recent Common Ancestor of individuals alive at any given time in the simulation.
 
 In order to accomodate for various mating, migration, breeding, and inheritance schemes, a flexible framework to carry out forward-time population genetics simulations is developed. The framework is then used to run a simulation, with parameters specific to the simulated population, resulting in an ancestry graph of all simulated graph individuals. Produced graph is then processed and analysed using various relatedness metrics.
 

@@ -22,7 +22,7 @@ checkCommandExists() {
    fi
 }
 USAGE="use -h for help"
-args=$(getopt -l "generateGraph:" -l "derive" -l "test" -o "h" -- "$@")
+args=$(getopt -l "version" -l "generateGraph:" -l "runExperiments" -l "derive" -l "test" -o "h" -- "$@")
 length=${#args} 
 if [[ $length -le 3 ]]; then 
   echo "you have to pass some arguments $USAGE"
@@ -74,26 +74,35 @@ while [ $# -ge 1 ]; do
                     exit 1
                     shift
                     ;;
-                --generateGraph)
-                        checkCommandExists python3
-                        if [ $? ]; then
-                          echo TODO generate graph using python3
-                          exit 1
-                        fi
-                        checkCommandExists python2
-                        if [ $? ]; then
-                          echo TODO generate graph using python2
-                          exit 1
-                        fi
+                --runExperiments)
                         checkCommandExists python
                         if [ $? ]; then
-                          echo TODO generate graph using python
-                          exit 1
+                          uncomittedChanges=$(git diff-index -p HEAD | wc -l)
+                          rev=$(git rev-parse HEAD)
+                          if [[ $uncomittedChanges > 0 ]]; then
+                            echo You have uncommited changes. You can only run experiments after you\'ve made a commit, so we can keep track of what code was used to run what experiments.
+                            exit 1
+                          fi
+                            
+                          shift
+                          python3 $SCRIPT_DIR/runExperiments.py $rev "$@"
+                          if [ $? ]; then
+                            echo "" > /dev/null
+                            exit 0
+                          else
+                            echo make sure you pass in a configuration directory.
+                            exit 1
+                          echo 
+                          fi
                         fi
-                        echo you have to have python installed end in your path as python2 or python3 or python
+                        echo you have to have python installed end in your path.
                         exit 1
                         shift
                         ;;
+                --version)
+                  echo 0.0.1
+                  exit 0
+                  ;;
                 -h)
                         cat $SCRIPT_DIR/README.md
                         exit 0
