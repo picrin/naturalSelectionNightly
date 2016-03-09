@@ -126,7 +126,11 @@ def initTracers(simulation, simIDs):
 def cleanupTracers(simulation, simIDs):
     for i, simID in enumerate(simIDs):
         sim = getSimByID(simulation, simID)
-        sim["tracers"] = None
+        sim["children"] = []
+        try:
+            del sim["tracers"]
+        except KeyError as e:
+            pass
 
 def quickMRCA(simulation, generationNo, tracersNo):
     if generationNo < 0:
@@ -139,6 +143,10 @@ def quickMRCA(simulation, generationNo, tracersNo):
         initTracers(simulation, frontier)
     currentGen = generationNo
     while True:
+        if currentGen <= 1:
+            cleanupTracers(simulation, oldFrontier)            
+            cleanupTracers(simulation, frontier)
+            return None, None
         nextFrontier = {}
         for simID in frontier:
             sim = getSimByID(simulation, simID)
@@ -146,16 +154,22 @@ def quickMRCA(simulation, generationNo, tracersNo):
             if all(sim["tracers"]):
                 returnGen = sim["generationNo"]
                 assert(returnGen == currentGen)
+                cleanupTracers(simulation, oldFrontier)            
+                cleanupTracers(simulation, frontier)
                 return simID, generationNo - returnGen
+        for simID in frontier:
+            sim = getSimByID(simulation, simID)
             for parentID in [sim["parentA"], sim["parentB"]]:
                 nextFrontier[parentID] = True
                 parent = getSimByID(simulation, parentID)
                 if simID in parent["children"]:
-                    raise Exception("there is a problem here")
+                    raise Exception("duplicate simIDs in parents.")
                 parent["children"].append(simID)
         cleanupTracers(simulation, oldFrontier)            
         oldFrontier = frontier
         frontier = [key for key in nextFrontier]
         currentGen -= 1
-        if currentGen == 0:
-            return None
+        #if currentGen == 0:
+        #    cleanupTracers(simulation, oldFrontier)            
+        #    cleanupTracers(simulation, frontier)
+        #    return None

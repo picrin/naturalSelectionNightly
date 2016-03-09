@@ -12,7 +12,9 @@ ls = os.listdir
 p = os.path.join
 resultDir = "results"
 
-import shutil
+redo = False
+if "redo" in sys.argv:
+    redo = True
 
 class s1(object):
     """
@@ -22,9 +24,9 @@ class s1(object):
         self.counter = 0
         self.sizes = [100]
         self.repetitions = 3
-        self.generations = 30
-        self.firstMutationAt = 100
-        self.advantageRange = [1.01, 1.05, 1.10]
+        self.generations = 100
+        self.firstMutationAt = 50
+        self.advantageRange = [1.05]
     def simulation(self, size, generations, firstMutationAt, advantage, repetition):
         filename = p(resultDir, "".join(map(str, ["_typ:sim", "_cla:", type(self).__name__, "_siz:" , size, "_gen:" , generations, "_mut:", firstMutationAt, "_adv:", advantage, "_rep:", repetition,"_sha:", sys.argv[1]])))
         def breeder(sims):
@@ -49,41 +51,58 @@ class s1(object):
             if e.errno != 17:
                 raise(e)
     def run(self):
-        self.prep()
         for repetition in range(self.repetitions):
             for advantage in self.advantageRange:
                 for size in self.sizes:
                     population, filename = self.simulation(size, self.generations, self.firstMutationAt, advantage, repetition)
-                    if not os.path.isfile(filename):
+                    if not os.path.isfile(filename) or redo:
                         temp_filename = "tmp_" + str(random.randint(0, 10**12))
                         with open(temp_filename, "w") as result:
                             writePopulation(result, population)
                             print(filename)
                             shutil.move(temp_filename, filename)
-                        
-if "s1" in sys.argv:
-    simulation = s1()
+
+class mrca(s1):
+    def __init__(self):
+        pass
+    def run(self):
+        lsresult = ls(resultDir)
+        for result in lsresult:
+            terms = list(splitAndKeep(result, ["_", ":"]))
+            typeIndex = terms.index("typ")
+            if terms[typeIndex + 2] == "sim":
+                size = int(terms[terms.index("siz") + 2])
+                terms[typeIndex + 2] = "mrca"
+                mrcaPath = p(resultDir, "".join(terms))
+                if not os.path.isfile(mrcaPath) or redo:
+                    with open(p(resultDir, result), "r") as graphFile:
+                        g = loadGraph(graphFile)
+                    generations = len(g["generations"])
+                    start = time.clock()
+                    with open(mrcaPath, "w") as mrcaFile:
+                        for generation in range(generations):
+                            mrca = quickMRCA(g, generation, size)
+                            mrcaFile.write(str(mrca[1]))
+                            mrcaFile.write("\n")
+                    stop = time.clock()
+                    print(mrcaPath, str(stop - start))
+
+def workFlow(classa):
+    simulation = classa()
+    simulation.prep()
     simulation.run()
 
-if "checkPreserved" in sys.argv:
-    pass
+if "s1" in sys.argv:
+    workFlow(s1)
+
+def splitAndKeep(string, delimiters):
+    currentLeft = 0
+    for i, char in enumerate(string):
+        if char in delimiters:
+            yield string[currentLeft:i]
+            yield string[i:i+1]
+            currentLeft = i+1
+    yield string[currentLeft:]
 
 if "mrca" in sys.argv:
-    lsresult = ls(resultDir)
-    relevant = []
-    for path in lsresult:
-        if "_mrca:y" not in path:
-            relevant.append(path)
-    for filename in relevant:
-        fullPath = p(resultDir, filename)
-        mrcaPath = fullPath + "_mrca:y"
-        if not os.path.isfile(mrcaPath):
-            with open(fullPath, "r") as graphFile:
-                g = loadGraph(graphFile)
-            start = time.clock()
-            with open(mrcaPath, "w") as mrcaFile:
-                mrca = quickMRCA(g, -1, 100)
-                mrcaFile.write(str(mrca))
-                mrcaFile.write("\n")
-                mrcaFile.write(str(time.clock() - start))
-                print(mrcaPath)
+    workFlow(mrca)
