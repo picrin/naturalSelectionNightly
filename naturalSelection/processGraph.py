@@ -1,6 +1,7 @@
 import json
 import collections
 import random
+from .sims import *
 #networkx is imported lazily so that pypy doesn't complain.
 
 def loadGraph(fileObj, fromVar=None):
@@ -132,6 +133,24 @@ def cleanupTracers(simulation, simIDs):
         except KeyError as e:
             pass
 
+def featureProportion(simulation, generationNo):
+    count = 0
+    for simID in simulation["generations"][generationNo]:
+        sim = getSimByID(simulation, simID)
+        if hasFeature(sim):
+            count += 1
+    return count
+
+def alleleProportion(simulation, generationNo):
+    count = 0
+    for simID in simulation["generations"][generationNo]:
+        sim = getSimByID(simulation, simID)
+        if sim["genotype"]["hasCopy1"]:
+            count += 1
+        if sim["genotype"]["hasCopy2"]:
+            count += 1
+    return count
+
 def quickMRCA(simulation, generationNo, tracersNo):
     if generationNo < 0:
         generationNo = len(simulation["generations"]) + generationNo
@@ -143,10 +162,6 @@ def quickMRCA(simulation, generationNo, tracersNo):
         initTracers(simulation, frontier)
     currentGen = generationNo
     while True:
-        if currentGen <= 1:
-            cleanupTracers(simulation, oldFrontier)            
-            cleanupTracers(simulation, frontier)
-            return None, None
         nextFrontier = {}
         for simID in frontier:
             sim = getSimByID(simulation, simID)
@@ -157,6 +172,10 @@ def quickMRCA(simulation, generationNo, tracersNo):
                 cleanupTracers(simulation, oldFrontier)            
                 cleanupTracers(simulation, frontier)
                 return simID, generationNo - returnGen
+        if currentGen < 1:
+            cleanupTracers(simulation, oldFrontier)            
+            cleanupTracers(simulation, frontier)
+            return None, None
         for simID in frontier:
             sim = getSimByID(simulation, simID)
             for parentID in [sim["parentA"], sim["parentB"]]:

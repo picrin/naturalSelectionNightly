@@ -9,4 +9,6 @@ if len(sys.argv) > 1:
 with open(filename, "wb") as randomstate:
     pickle.dump(random.getstate(), randomstate, 2)
 print("random state dumped to " + filename)
-naturalSelection.testModule.runAll()
+
+res = naturalSelection.testModule.runAll()
+sys.exit(res)

@@ -16,27 +16,34 @@ redo = False
 if "redo" in sys.argv:
     redo = True
 
+def splitAndKeep(string, delimiters):
+    currentLeft = 0
+    for i, char in enumerate(string):
+        if char in delimiters:
+            yield string[currentLeft:i]
+            yield string[i:i+1]
+            currentLeft = i+1
+    yield string[currentLeft:]
+
 class s1(object):
     """
     Selective Sweep Dominant Wanderer Fitness Breeder Simulation.
     """
     def __init__(self):
-        self.counter = 0
-        self.sizes = [100]
-        self.repetitions = 3
+        self.sizes = [100, 200]
+        self.repetitions = 500
         self.generations = 100
-        self.firstMutationAt = 50
+        self.firstMutationAt = 0
         self.advantageRange = [1.05]
     def simulation(self, size, generations, firstMutationAt, advantage, repetition):
         filename = p(resultDir, "".join(map(str, ["_typ:sim", "_cla:", type(self).__name__, "_siz:" , size, "_gen:" , generations, "_mut:", firstMutationAt, "_adv:", advantage, "_rep:", repetition,"_sha:", sys.argv[1]])))
         def breeder(sims):
             return fitnessBreeder(sims, advantage, len(sims))
         def mutator(allSims):
-            if self.counter == firstMutationAt:
-                randomSimIndex = random.randint(0, len(allSims) - 1)
-                allSims[randomSimIndex]["genotype"]["hasCopy1"] = True
-            self.counter += 1
+            pass
         def firstMutator(allSims):
+            randomSimIndex = random.randint(0, len(allSims) - 1)
+            allSims[randomSimIndex]["genotype"]["hasCopy1"] = True
             for sim in allSims:
                 sim["genotype"]["isDominant"] = True
         def firstGeneration():
@@ -57,10 +64,13 @@ class s1(object):
                     population, filename = self.simulation(size, self.generations, self.firstMutationAt, advantage, repetition)
                     if not os.path.isfile(filename) or redo:
                         temp_filename = "tmp_" + str(random.randint(0, 10**12))
+                        start = time.clock()
                         with open(temp_filename, "w") as result:
                             writePopulation(result, population)
-                            print(filename)
                             shutil.move(temp_filename, filename)
+                        stop = time.clock()
+                        print(filename, str(stop - start))
+
 
 class mrca(s1):
     def __init__(self):
@@ -83,26 +93,20 @@ class mrca(s1):
                         for generation in range(generations):
                             mrca = quickMRCA(g, generation, size)
                             mrcaFile.write(str(mrca[1]))
+                            mrcaFile.write(",")
+                            proportion = alleleProportion(g, generation)
+                            mrcaFile.write(str(proportion))
                             mrcaFile.write("\n")
                     stop = time.clock()
                     print(mrcaPath, str(stop - start))
 
-def workFlow(classa):
+def workflow(classa):
     simulation = classa()
     simulation.prep()
     simulation.run()
 
 if "s1" in sys.argv:
-    workFlow(s1)
-
-def splitAndKeep(string, delimiters):
-    currentLeft = 0
-    for i, char in enumerate(string):
-        if char in delimiters:
-            yield string[currentLeft:i]
-            yield string[i:i+1]
-            currentLeft = i+1
-    yield string[currentLeft:]
+    workflow(s1)
 
 if "mrca" in sys.argv:
-    workFlow(mrca)
+    workflow(mrca)

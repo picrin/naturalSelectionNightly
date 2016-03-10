@@ -12,5 +12,6 @@ def runAll():
     add(TestPointPicking)
     add(TestGenerateGraph)
     add(TestProcessGraph)
-    runner.run(suite)
+    failureNo = len(runner.run(suite).failures)
+    return failureNo
 

@@ -51,7 +51,7 @@ class TestProcessGraph(unittest.TestCase):
         with open("unsatAncestryTestCase") as f:
             g = loadGraph(f)
         call = quickMRCA(g, 3, 100000)
-        self.assertTrue(call == None)
+        self.assertTrue(call == (None, None))
     def testRandomMRCA(self):
         with open("randomAncestryTestCase") as f:
             g = loadGraph(f)
@@ -62,4 +62,17 @@ class TestProcessGraph(unittest.TestCase):
         _, genOld = MRCA(g)
         _, genNew = quickMRCA(g, -1, 2**64)
         self.assertTrue(genOld == genNew)
-
+    def testFeatureProportion(self):
+        with open("randomAncestryTestCase") as handle:
+            g = loadGraph(handle)
+        self.assertTrue(featureProportion(g, 0) == 0)
+        self.assertTrue(featureProportion(g, 1) == 1)
+        self.assertTrue(featureProportion(g, 2) == 1)
+        self.assertTrue(featureProportion(g, 3) == 2)
+    def testAlleleProportion(self):
+        with open("randomAncestryTestCase") as handle:
+            g = loadGraph(handle)
+        self.assertTrue(alleleProportion(g, 0) == 0)
+        self.assertTrue(alleleProportion(g, 1) == 2)
+        self.assertTrue(alleleProportion(g, 2) == 1)
+        self.assertTrue(alleleProportion(g, 3) == 2)
