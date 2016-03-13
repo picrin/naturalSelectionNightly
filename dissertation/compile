@@ -1,3 +1,4 @@
 pdflatex l4proj
 biber l4proj
+makeglossaries l4proj
 pdflatex l4proj
