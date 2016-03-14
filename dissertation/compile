@@ -1,4 +1,7 @@
-pdflatex l4proj
-biber l4proj
-makeglossaries l4proj
-pdflatex l4proj
+#/bin/sh
+projName="l4proj"
+pdflatex $projName
+biber $projName
+makeglossaries $projName
+pdflatex $projName
+pdflatex $projName

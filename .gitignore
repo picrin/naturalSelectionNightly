@@ -2,3 +2,10 @@ venv
 activate
 *.pyc
 *.class
+results
+wandererResults
+fitnessBreederResults
+data
+partialResults
+oldResults
+files

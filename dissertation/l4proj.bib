@@ -1,3 +1,38 @@
+@article{naturalSelectionSignatures16,
+author = {Duforet-Frebourg, Nicolas and Luu, Keurcien and Laval, Guillaume and Bazin, Eric and Blum, Michael G.B.}, 
+title = {Detecting Genomic Signatures of Natural Selection with Principal Component Analysis: Application to the 1000 Genomes Data},
+volume = {33}, 
+number = {4}, 
+pages = {1082-1093}, 
+year = {2016}, 
+doi = {10.1093/molbev/msv334}, 
+abstract = {To characterize natural selection, various analytical methods for detecting candidate genomic regions have been developed. We propose to perform genome-wide scans of natural selection using principal component analysis (PCA). We show that the common FST index of genetic differentiation between populations can be viewed as the proportion of variance explained by the principal components. Considering the correlations between genetic variants and each principal component provides a conceptual framework to detect genetic variants involved in local adaptation without any prior definition of populations. To validate the PCA-based approach, we consider the 1000 Genomes data (phase 1) considering 850 individuals coming from Africa, Asia, and Europe. The number of genetic variants is of the order of 36 millions obtained with a low-coverage sequencing depth (3×). The correlations between genetic variation and each principal component provide well-known targets for positive selection (EDAR, SLC24A5, SLC45A2, DARC), and also new candidate genes (APPBPP2, TP1A1, RTTN, KCNMA, MYO5C) and noncoding RNAs. In addition to identifying genes involved in biological adaptation, we identify two biological pathways involved in polygenic adaptation that are related to the innate immune system (beta defensins) and to lipid metabolism (fatty acid omega oxidation). An additional analysis of European data shows that a genome scan based on PCA retrieves classical examples of local adaptation even when there are no well-defined populations. PCA-based statistics, implemented in the PCAdapt R package and the PCAdapt fast open-source software, retrieve well-known signals of human adaptation, which is encouraging for future whole-genome sequencing project, especially when defining populations is difficult.}, 
+URL = {http://mbe.oxfordjournals.org/content/33/4/1082.abstract}, 
+eprint = {http://mbe.oxfordjournals.org/content/33/4/1082.full.pdf+html}, 
+journal = {Molecular Biology and Evolution} 
+}
+
+@article{peng05,
+	title = {{simuPOP}: a forward-time population genetics simulation environment},
+	volume = {21},
+	issn = {1367-4803, 1460-2059},
+	shorttitle = {{simuPOP}},
+	url = {http://bioinformatics.oxfordjournals.org/content/21/18/3686},
+	doi = {10.1093/bioinformatics/bti584},
+	abstract = {Summary: simuPOP is a forward-time population genetics simulation environment. The core of simuPOP is a scripting language (Python) that provides a large number of objects and functions to manipulate populations, and a mechanism to evolve populations forward in time. Using this R/Splus-like environment, users can create, manipulate and evolve populations interactively, or write a script and run it as a batch file. Owing to its flexible and extensible design, simuPOP can simulate large and complex evolutionary processes with ease. At a more user-friendly level, simuPOP provides an increasing number of built-in scripts that perform simulations ranging from implementation of basic population genetics models to generating datasets under complex evolutionary scenarios.
+Availability: simuPOP is freely available at http://simupop.sourceforge.net, distributed under GPL license.
+Contact: bpeng@rice.edu},
+	language = {en},
+	number = {18},
+	urldate = {2016-03-14TZ},
+	journal = {Bioinformatics},
+	author = {Peng, Bo and Kimmel, Marek},
+	month = sep,
+	year = {2005},
+	pmid = {16020469},
+	pages = {3686--3687}
+}
+
 @article{rohde04,
 	title = {Modelling the recent common ancestry of all living humans},
 	volume = {431},
@@ -29,6 +64,14 @@
 	pages = {442}
 }
 
+@online{simuPOP16,
+  author = {simuPOP},
+  title = {simuPOP source code},
+  year = 2016,
+  url = {http://sourceforge.net/p/simupop/code/HEAD/tree/trunk/src/individual.cpp},
+  urldate = {2016-03-13}
+}
+
 @online{omim16,
   author = {OMIM},
   title = {Online Mendelian Inheritance in Man},
@@ -45,7 +88,7 @@
 	abstract = {The hypothesis of fetal origins of adult disease posits that early developmental exposures involve epigenetic modifications, such as DNA methylation, that influence adult disease susceptibility. In utero or neonatal exposure to bisphenol A (BPA), a high-production-volume chemical used in the manufacture of polycarbonate plastic, is associated with higher body weight, increased breast and prostate cancer, and altered reproductive function. This study shows that maternal exposure to this endocrine-active compound shifted the coat color distribution of viable yellow agouti (A vy) mouse offspring toward yellow by decreasing CpG (cytosine-guanine dinucleotide) methylation in an intracisternal A particle retrotransposon upstream of the Agouti gene. CpG methylation also was decreased at another metastable locus, the CDK5 activator-binding protein (Cabp IAP). DNA methylation at the A vy locus was similar in tissues from the three germ layers, providing evidence that epigenetic patterning during early stem cell development is sensitive to BPA exposure. Moreover, maternal dietary supplementation, with either methyl donors like folic acid or the phytoestrogen genistein, negated the DNA hypomethylating effect of BPA. Thus, we present compelling evidence that early developmental exposure to BPA can change offspring phenotype by stably altering the epigenome, an effect that can be counteracted by maternal dietary supplements.},
 	language = {en},
 	number = {32},
-	urldate = {2016-03-13TZ},
+	urldate = {2016-03-13},
 	journal = {Proceedings of the National Academy of Sciences},
 	author = {Dolinoy, Dana C. and Huang, Dale and Jirtle, Randy L.},
 	month = aug,
@@ -71,7 +114,7 @@ Conclusions
 This is the first demonstration of an association of pre-conception parental trauma with epigenetic alterations that is evident in both exposed parent and offspring, providing potential insight into how severe psychophysiological trauma can have intergenerational effects.},
 	language = {English},
 	number = {0},
-	urldate = {2016-03-13TZ},
+	urldate = {2016-03-13},
 	journal = {Biological Psychiatry},
 	author = {Yehuda, Rachel and Daskalakis, Nikolaos P. and Bierer, Linda M. and Bader, Heather N. and Klengel, Torsten and Holsboer, Florian and Binder, Elisabeth B.},
 	month = aug,
@@ -88,7 +131,7 @@ This is the first demonstration of an association of pre-conception parental tra
 	abstract = {Somaclonal variation arises in plants and animals when differentiated somatic cells are induced into a pluripotent state, but the resulting clones differ from each other and from their parents. In agriculture, somaclonal variation has hindered the micropropagation of elite hybrids and genetically modified crops, but the mechanism responsible remains unknown. The oil palm fruit /`mantled/' abnormality is a somaclonal variant arising from tissue culture that drastically reduces yield, and has largely halted efforts to clone elite hybrids for oil production. Widely regarded as an epigenetic phenomenon, /`mantling/' has defied explanation, but here we identify the MANTLED locus using epigenome-wide association studies of the African oil palm Elaeis guineensis. DNA hypomethylation of a LINE retrotransposon related to rice Karma, in the intron of the homeotic gene DEFICIENS, is common to all mantled clones and is associated with alternative splicing and premature termination. Dense methylation near the Karma splice site (termed the Good Karma epiallele) predicts normal fruit set, whereas hypomethylation (the Bad Karma epiallele) predicts homeotic transformation, parthenocarpy and marked loss of yield. Loss of Karma methylation and of small RNA in tissue culture contributes to the origin of mantled, while restoration in spontaneous revertants accounts for non-Mendelian inheritance. The ability to predict and cull mantling at the plantlet stage will facilitate the introduction of higher performing clones and optimize environmentally sensitive land resources.},
 	language = {en},
 	number = {7570},
-	urldate = {2016-03-13TZ},
+	urldate = {2016-03-13},
 	journal = {Nature},
 	author = {Ong-Abdullah, Meilina and Ordway, Jared M. and Jiang, Nan and Ooi, Siew-Eng and Kok, Sau-Yee and Sarpan, Norashikin and Azimi, Nuraziyan and Hashim, Ahmad Tarmizi and Ishak, Zamzuri and Rosli, Samsul Kamal and Malike, Fadila Ahmad and Bakar, Nor Azwani Abu and Marjuni, Marhalil and Abdullah, Norziha and Yaakub, Zulkifli and Amiruddin, Mohd Din and Nookiah, Rajanaidu and Singh, Rajinder and Low, Eng-Ti Leslie and Chan, Kuang-Lim and Azizi, Norazah and Smith, Steven W. and Bacher, Blaire and Budiman, Muhammad A. and Van Brunt, Andrew and Wischmeyer, Corey and Beil, Melissa and Hogan, Michael and Lakey, Nathan and Lim, Chin-Ching and Arulandoo, Xaviar and Wong, Choo-Kien and Choo, Chin-Nee and Wong, Wei-Chee and Kwan, Yen-Yen and Alwee, Sharifah Shahrul Rabiah Syed and Sambanthamurthi, Ravigadevi and Martienssen, Robert A.},
 	month = sep,
@@ -220,7 +263,7 @@ abstract = { ABSTRACT Amajor component of variation in body height is due to gen
 	doi = {10.1038/nature14507},
 	abstract = {The Bronze Age of Eurasia (around 3000–1000 BC) was a period of major cultural changes. However, there is debate about whether these changes resulted from the circulation of ideas or from human migrations, potentially also facilitating the spread of languages and certain phenotypic traits. We investigated this by using new, improved methods to sequence low-coverage genomes from 101 ancient humans from across Eurasia. We show that the Bronze Age was a highly dynamic period involving large-scale population migrations and replacements, responsible for shaping major parts of present-day demographic structure in both Europe and Asia. Our findings are consistent with the hypothesized spread of Indo-European languages during the Early Bronze Age. We also demonstrate that light skin pigmentation in Europeans was already present at high frequency in the Bronze Age, but not lactose tolerance, indicating a more recent onset of positive selection on lactose tolerance than previously thought.},
 	number = {7555},
-	urldate = {2016-02-19TZ},
+	urldate = {2016-02-19},
 	journal = {Nature},
 	author = {Allentoft, Morten E. and Sikora, Martin and Sjögren, Karl-Göran and Rasmussen, Simon and Rasmussen, Morten and Stenderup, Jesper and Damgaard, Peter B. and Schroeder, Hannes and Ahlström, Torbjörn and Vinner, Lasse and Malaspinas, Anna-Sapfo and Margaryan, Ashot and Higham, Tom and Chivall, David and Lynnerup, Niels and Harvig, Lise and Baron, Justyna and Casa, Philippe Della and Dąbrowski, Paweł and Duffy, Paul R. and Ebel, Alexander V. and Epimakhov, Andrey and Frei, Karin and Furmanek, Mirosław and Gralak, Tomasz and Gromov, Andrey and Gronkiewicz, Stanisław and Grupe, Gisela and Hajdu, Tamás and Jarysz, Radosław and Khartanovich, Valeri and Khokhlov, Alexandr and Kiss, Viktória and Kolář, Jan and Kriiska, Aivar and Lasak, Irena and Longhi, Cristina and McGlynn, George and Merkevicius, Algimantas and Merkyte, Inga and Metspalu, Mait and Mkrtchyan, Ruzan and Moiseyev, Vyacheslav and Paja, László and Pálfi, György and Pokutta, Dalia and Pospieszny, Łukasz and Price, T. Douglas and Saag, Lehti and Sablin, Mikhail and Shishlina, Natalia and Smrčka, Václav and Soenov, Vasilii I. and Szeverényi, Vajk and Tóth, Gusztáv and Trifanova, Synaru V. and Varul, Liivi and Vicze, Magdolna and Yepiskoposyan, Levon and Zhitenev, Vladislav and Orlando, Ludovic and Sicheritz-Pontén, Thomas and Brunak, Søren and Nielsen, Rasmus and Kristiansen, Kristian and Willerslev, Eske},
 	month = jun,

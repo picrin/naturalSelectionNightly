@@ -12,9 +12,42 @@
 \addbibresource{l4proj.bib}
 \makeglossaries
 \glstoctrue
+
 \newglossaryentry{autosomal}{
   name=autosomal,
-  description={An autosomal feature is located on one of the numbered chromosomes (as opposed to the sex chromosome). Organisms typically have a pair of autosomal chromosomes, one from the mother and one from the father.}
+  description={An autosomal gene is located on one of the numbered chromosomes (as opposed to the sex chromosome). Organisms typically have a pair of autosomal chromosomes, one from the mother and one from the father}
+}
+
+\newglossaryentry{polyploid}{
+  name=polyploid,
+  description={Most organisms have only two versions of each autosomal gene. Some organisms have 4, 6, 8 or more copies of each gene. Such organisms are called polyploid organisms}
+}
+
+\newglossaryentry{chromosome}{
+  name=chromosome,
+  description={chromosome is a collections of genes. Organisms usually have several chromosomes, including one or two, which define sex}
+}
+
+
+\newglossaryentry{sex-linked}{
+  name=sex-linked,
+  description={A sex-linked gene is located on one of the sex chromosomes (as opposed to one of the numbered chromosomes). Organisms usually have either one or two copies of sex-linked genes, depending on the sex}
+}
+
+\newglossaryentry{allele}{
+  name=allele,
+  description={A version of a gene. Each gene can have one or multiple alleles. Existence of many gene versions is the reason for variety within population. Some alleles can corrupt normal body function and result in disease}
+}
+
+\newglossaryentry{population graph}{
+  name=population graph,
+  description={A population graph $G_{p} = (V, E)$ is a Directed Acyclic Graph, where $V$ is the set of all simulated individuals, dead or alive, and $E$ is a collection of all pairs of sims $(u, v)$ such that $u$ is a parent of $v$}
+}
+
+\newglossaryentry{locus}{
+  name=locus,
+  plural={loci},
+  description={A placeholder for a gene. Locus is situated on a chromosome and can hold a version of the gene -- see \gls{allele}. If the locus is situated on one of the numbered chromosomes, the gene is called \gls{autosomal}. If the gene is on one of the sex chromosomes, the gene is called \gls{sex-linked}}
 }
 
 \newtheorem*{quest}{Research Question}
@@ -22,9 +55,11 @@
 \newcommand{\Tmrca}{T\raisebox{-.4ex}{\scriptsize MRCA}}
 \newcommand{\genotype}[2]{\ensuremath{(\mathrm{#1}, \mathrm{#2})}}
 
+\renewcommand*{\glstextformat}{\textbf}
+
 \newif\ifdebug
 
-\debugtrue
+\debugfalse
 
 \lstset{basicstyle=\ttfamily\footnotesize,breaklines=true}
 
@@ -65,9 +100,10 @@ The publication of ``On the Origin of Species'' \parencite{darwin59} is generall
 
 \ifdebug
   Next paragraph does not have to be included in the final version of the dissertation.
-\fi
 
 While the research presented in this work falls within the realm of computational biology, one should understand the difficulty of both undertaking the research in the field and presenting the results, namely, the broadness of topics and tools involved, which need to be understood and taken into account if the research is to be of any significance. A part of the struggle in communication is one of vocabulary, as each of the related fields uses specialized jargon, and researches with expertise in one field might not understand the other fields' jargon. To ease this difficulty a glossary of technical terms in use.
+
+\fi
 
 \section{Research question}
 The scientific question that we will try to answer in this piece of work is directly connected with evolution by natural selection and perhaps might have even occurred to Darwin himself:
@@ -76,7 +112,7 @@ The scientific question that we will try to answer in this piece of work is dire
 Does natural selection affect relatedness in a species? Are individuals in a species under selective pressure more likely to be closely related?
 \end{quest}
 
-We will seek to answer this question using a computer simulation. First, we have to decide on how to measure relatedness. We will follow \cite{rohde04} and focus on computing time (in generations) that is taken for a group of simulated individuals to reach a Most Recent Common Ancestor (MRCA). More precisely, we will speak of a \textbf{population graph}, which we will define to be a Directed Acyclic Graph(DAG), with vertices representing all individuals ever alive and directed edges representing the parent-child relationship between individuals. Additionally, each vertex will be labeled with complete information on individual's traits. For any point in time all individuals alive at that point will be referred to as ``population at time $t$'', or simply ``population'', if the time can be inferred from the context. An MRCA of a population at time $t$ will be a common ancestor which is most recent, i.e. precedes the population by the least number of generations. The time (in generations) that is taken to reach such individual we will denote by $T_{MRCA}$.
+We will seek to answer this question using a computer simulation. First, we have to decide on how to measure relatedness. We will follow \cite{rohde04} and focus on computing time (in generations) that is taken for a group of simulated individuals to reach a Most Recent Common Ancestor (MRCA). More precisely, we will speak of a \gls{population graph}, which we will define to be a Directed Acyclic Graph (DAG), with vertices representing all individuals ever alive and directed edges representing the parent-child relationship between individuals. Additionally, each vertex will be labeled with complete information on individual's traits. For any point in time all individuals capable of inter-breeding at that point will be referred to as ``generation at time $t$'', or simply ``generation'', if the time can be inferred from the context. An MRCA of a generation at time $t$ will be a common ancestor which is the most recent, i.e. precedes the population by the least number of generations. The time (in generations) that is taken to reach such individual will be denoted by $T_{MRCA}$.
 
 There are other, auxiliary questions we will have to answer on our way. Most crucially we will have to decide on such important details of our simulation as the mating scheme, migration, competition for resource, survivability, number of offspring, etc. Often we will be able to use the choices of parameters already made by others, e.g. breeding scheme \parencite{peng10}. The choice of the parameters is discussed in chapter \ref{research}, along with the appropriate methodology, to which we prepare ground in chapter \ref{review}. We discuss the architecture of the computer program which constitutes the solution, and is on its own a valuable contribution to the field in chapter \ref{practical}. The results are presented in chapter \ref{practical} and the conclusions will be drawn in chapter \ref{conclusion}.
 
@@ -108,9 +144,9 @@ Firstly, we will be acting under the assumption that each animal characteristic 
   the mode of expression of the characteristic, which can be either dominant or recessive.
 \end{assum}
 
-We have to remark that these assumptions may not be obviously true for certain seemingly continuous, partially environment-dependent characteristics such as height, weight or individual's position in the autism spectrum. However experiments using various methods have consistently asserted that ~80\% of human height is inheritable \parencite{heightTwins, heightJustSiblings}. Although the challenge of identifying all genes affecting height is still open, recent progress using a cross-discipline technique called Genome Wide Association Study (GWAS) identified over 40 genes, which contribute 5 percent points towards total height heritability. To play devil's advocate further, it has been recently established that important traits can be acquired and inherited by non-genetic means in both plants \parencite{palmOilKernel}, non-human animals \parencite{dolinoy_maternal_2007} and humans \parencite{yehuda_holocaust_2015}, giving rise to the field of Epigenetics. We shall consider both environmental and epigenetic factors to be outside of the scope of this research. A curious reader is referred to an accessible, popular science discussion of the topic of GWAS, height inheritance and epigenetics by \textcite{GWASDiscussion}. A concerned reader should find assurance in that a great many traits do obey Mendelian's Inheritance straightforwardly, a comprehensive database for human traits, maintained by John Hopkins University at omim.org \parencite{omim16}, finds 24617 genes using the match-all wildcard $*$, including 22044 \gls{autosomal} genes (\date{March 13, 2016}).
+We have to remark that these assumptions may not be obviously true for certain seemingly continuous, partially environment-dependent characteristics such as height, weight or individual's position in the autism spectrum. However experiments using various methods have consistently asserted that ~80\% of human height is inheritable \parencite{heightTwins, heightJustSiblings}. Although the challenge of identifying all genes affecting height is still open, recent progress using a cross-discipline technique called Genome Wide Association Study (GWAS) identified over 40 genes, which contribute 5 percent points towards total height heritability. To play devil's advocate further, it has been recently established that important traits can be acquired and inherited by non-genetic means in both plants \parencite{palmOilKernel}, non-human animals \parencite{dolinoy_maternal_2007} and humans \parencite{yehuda_holocaust_2015}, giving rise to the field of Epigenetics. We shall consider both environmental and epigenetic factors to be outside of the scope of this research. A curious reader is referred to an accessible, popular science discussion of the topic of GWAS, height inheritance and epigenetics by \textcite{GWASDiscussion}. A concerned reader should find assurance in that a great many traits do obey Mendelian's Inheritance straightforwardly. A comprehensive database for human traits, maintained by John Hopkins University at omim.org \parencite{omim16}, finds 24617 such genes using the match-all wildcard $*$, including 22044 \gls{autosomal} genes (as of \date{March 13, 2016}).
 
-Before we proceed let us recall the following, standard notation: if an allele encoding a trait is determined to be dominant we will represent it with capital letter, e.g. $\mathrm{A}$. In such case a lack of trait will be considered recessive and be denoted as $\mathrm{a}$. Under the assumption \ref{genotypes}, we will consider all three possible genotypes: \genotype{A}{A} -- homozygous dominant, \genotype{A}{a} -- heterozygous and \genotype{a}{a} -- homozygous recessive. Of these the first two the genotypes \genotype{A}{A} and \genotype{A}{a} will result in an individual possessing the characteristic. An individual with the last genotype \genotype{a}{a} will not exhibit the trait. Analogously, one can consider a trait inherited recessively, and in such case the above description is true when ``trait'' is mutually exchanged with ``lack of trait'', ``not exhibit the trait'' with ``exhibit the trait'', etc.
+Before we proceed let us recall the following, standard notation: if an \gls{allele} encoding a trait is determined to be dominant we will represent it with capital letter, e.g. $\mathrm{A}$. In such case a lack of trait will be considered recessive and be denoted as $\mathrm{a}$. Under the assumption \ref{genotypes}, we will consider all three possible genotypes: \genotype{A}{A} -- homozygous dominant, \genotype{A}{a} -- heterozygous and \genotype{a}{a} -- homozygous recessive. Of these the first two the genotypes \genotype{A}{A} and \genotype{A}{a} will result in an individual possessing the characteristic. An individual with the last genotype \genotype{a}{a} will not exhibit the trait. Analogously, one can consider a trait inherited recessively, and in such case the above description is true when ``trait'' is mutually exchanged with ``lack of trait'', ``not exhibit the trait'' with ``exhibit the trait'', etc.
 
 Further, we will assume that
 \begin{assum}\label{offspring}
@@ -132,7 +168,7 @@ We can use our assumptions \ref{genotypes}, \ref{dominance}, \ref{offspring} to 
     \label{offspringTable}
 \end{table}
 
-Finally, we have to remark that the assumption \ref{offspring} may not be correct in rare cases of sex-linked characteristics (e.g. colour-blindess). These will not be focused on in this research.
+Finally, we have to remark that the assumption \ref{offspring} may not be correct in rare cases of \gls{sex-linked} characteristics (e.g. colour-blindess). This research will focus exclusively on \gls{autosomal} genes.
 
 \subsection{Hardy-Weinberg principle}
 
@@ -173,10 +209,14 @@ glossary locus, loci, polyploid, chromosome, DAG, extension modules
 
 \fi
 \section{Natural Selection Framework}
-An important contribution of this research work is an implementation of a forward-time population modeling framework. The framework is then used to investigate the research question that we're interested in by focusing on particular population models of our interest. However, the framework does not force its users into any particular choice of the model. A wide range of real-life populations can be modeled by implementing appropriate mutation, breeding, mating, natural selection, migration and inheritance schemes. The schemes are implemented as python functions, and can be glued together using the framework's API into a full population model. This approach is not dissimilar from [cite simuPOP], a particularly successful forward-time simulation framework, which has been used extensively to model [give a list of things it's been used for]. Let us discuss the design of the framework focusing on similarities and differences with simuPOP.
+An important contribution of this research work is an implementation of a forward-time population modeling framework. The framework is then used to investigate the research question that we're interested in by focusing on particular population models of our interest. However, the framework does not force its users into any particular choice of the model. A wide range of real-life populations can be modeled by implementing appropriate mutation, breeding, mating, natural selection, migration and inheritance schemes. The schemes are implemented as python functions, and can be glued together using the framework's API into a full population model. This approach is not dissimilar from simuPOP \parencite{peng05}, a particularly successful forward-time simulation framework, which has been used extensively to model populations under selective pressure, for example to model population divergence due to local adaptation \parencite{naturalSelectionSignatures16}. Let us discuss the design of the framework focusing on similarities and differences with simuPOP.
 
 \subsection{High-Level overview}
-The central unit of any simulation in the framework is a ``sim''. Sims are computational abstractions of biological individuals. Sims are assigned partners in accordance with a mating scheme, can sexually reproduce with other sims of opposite sex, and produce offspring in accordance with a breeding scheme. Both mating and breeding schemes can be chosen from any provided by the framework or be user-defined. Some mating and breeding schemes are capable of taking into account the individual's relative fitness and therefore can be used to get insights into the process of natural selection. Sims live on the surface of a unit sphere. Each sim after birth is assigned the position of its female parent. After birth and before mating and breeding each sim migrates in accordance with a specified migration scheme. Each sim possess a genome, which is an encoding of that sim's genes. The set of all sims in the simulation forms the set of vertices $V$ in the population graph $G_{p} = (V, E)$. A pair of sims $(u, v)$ belongs to the set of edges $E$ of $G_{p}$ if the sim $u$ is a parent of the sim $v$. It is easily noticed that $G_{p}$ is a DAG, as no sim can be its own ancestor. Finally sims are serialised into json format and output to hard drive for further analysis. The analysis stage consists of computing MRCA of each generation of sims in the population graph.
+The central unit of any simulation in the framework is a ``sim''. Sims are computational abstractions of biological individuals. Sims are assigned partners in accordance with a mating scheme, can sexually reproduce with other sims of opposite sex, and produce offspring in accordance with a breeding scheme. Both mating and breeding schemes can be chosen from any provided by the framework or be user-defined. Some mating and breeding schemes are capable of taking into account the individual's relative fitness and therefore can be used to get insights into the process of natural selection. Sims live on the surface of a unit sphere. Each sim after birth is assigned the position of its female parent. After birth and before mating and breeding each sim migrates in accordance with a specified migration scheme. Each sim possess a genome, which is an encoding of that sim's genes.
+
+The set of all sims in the simulation forms the set of vertices $V$ in the \gls{population graph} $G_{p} = (V, E)$. A pair of sims $(u, v)$ belongs to the set of edges $E$ of $G_{p}$ if the sim $u$ is a parent of the sim $v$. It is easily noticed that $G_{p}$ is a DAG, as no sim can be its own ancestor. We call sims capable of interbreeding at time $t$ to be a generation. Like in simuPOP, the framework is designed in such way that generations are discrete, i.e. all sims in the parent generation die before any sims in the children generation are capable of reproduction. This simplifies the construction of the framework.
+
+Finally sims are serialised into json format and output to hard drive for further analysis. The analysis stage consists of computing MRCA of each generation of sims in the population graph.
 
 simuPOP provides most of the same functionality, however there are significant differences between the two programs. Exact comparison is difficult, because simuPOP is mature software in constant development for over a decade, whereas the proposed framework is an effect of 7 months of part-time development.
 
@@ -184,9 +224,9 @@ Most notably, simuPOP does not allow for graph-theoretic analysis of simulated p
 
 \subsection{Performance}
 
-SimuPOP achieves low memory and CPU footprint by using python's \textit{extension modules}, which allows the implementation a much more direct access to underlying hardware than pure python implementation. However, there is a significant price that simuPOP pays for this strength.
+SimuPOP achieves low memory and CPU footprint by using python's \textit{extension modules}, which allows more direct access to underlying hardware than via pure python. However, there are significant drawbacks of using \textit{extension modules}.
 
-Firstly, development is slowed down by higher cognitive burden put on the programmer, as C++ requires manual memory management and python's C++ API is arguably less friendly than pure python's. A reader critical of the previous statement can judge for themselves by looking at this snippet of simuPOP's source code:
+Firstly, development is slowed down by higher cognitive burden put on the programmer, as \textit{extension modules} are typically written in C++, which is arguably less user-friendly than pure python. The following snippet of simuPOP's source code serves as good example:
 
 \begin{lstlisting}
 PyObject * genoObj = PyTuple_New(alleles.size());
@@ -203,16 +243,20 @@ genoObj = tuple(alleles)
 return genoObj    
 \end{lstlisting}
 
-Secondly, a study correlating error rates with programming languages has shown C++ programmers make more errors than python programmers: [cite error rates: macbeth.cs.ucdavis.edu/lang\_study.pdf]. These results must be treated with a pinch of salt -- correlation does not imply causation and arguably more depends on the quality of the programmer than on the quality of programming language, additionally the methodology of parsing commit messages to detect bug fixes employed by this study is rather experimental.
+\ifdebug
 
-Thirdly, the use of extension modules limits execution environment of simuPOP to Cython, whereas the framework proposed has been successfully tested both under python 2, 3 (the entire framework) pypi and jython (with exception of the graph analysis module).
+Simon suggests to remove this paragraph.
+
+Secondly, a study correlating error rates with programming languages has shown C++ programmers make more errors than python programmers: [cite error rates: macbeth.cs.ucdavis.edu/lang\_study.pdf]. These results must be treated with a pinch of salt -- correlation does not imply causation and arguably more depends on the quality of the programmer than on the quality of programming language, additionally the methodology of parsing commit messages to detect bug fixes employed by this study is rather experimental.
+\fi
+Secondly, the use of extension modules limits execution environment of simuPOP to CPython, whereas the framework proposed has been successfully tested both under CPython 2 and 3 (the entire framework), pypi and jython (with exception of the graph analysis module). Using pure python therefore results in much higher portability.
 
 Let us end this note on performance by saying that the performance of the framework is satisfactory for our purpose. Timing one of the simulation scripts (with MRCA analysis) reveals that the simulation of an initial population of 1000 sims for 70 generations accomplishes in under 2 minutes on consumer grade hardware.
 
 \subsection{Genome}
-SimuPOP allows for extensive modeling of genomes, such as modeling multiple loci situated on multiple chromosomes even in polyploid organisms [cite source code: sourceforge.net/p/simupop/code/HEAD/tree/trunk/src/individual.cpp].
+SimuPOP allows for extensive modeling of genomes, such as modeling multiple loci situated on multiple \gls{chromosome}s, even in \gls{polyploid} organisms \parencite{simuPOP16}.
 
-Proposed framework takes much simpler approach consistent with our requirement of investigating a single feature, in its present form allowing for only one locus capable of containing only 2 alleles.
+The proposed framework takes much simpler approach consistent with our requirement of investigating a single feature, in its present form allowing for only one \gls{locus} capable of containing only 2 alleles.
 
 \subsection{Migration}
 Mine is more accurate because of the unit sphere.
