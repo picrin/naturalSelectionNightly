@@ -34,6 +34,30 @@ class TestGenerateGraph(unittest.TestCase):
         """
         with open(".testParentChild", "w") as test:
             generateToyPopulation(test)
+    def testCondWriter(self):
+        def nullMutator(sims):
+            pass
+        def firstGeneration():
+            return simsFrame(populationSize = 100, mutator = nullMutator)
+        def nextGeneration(nextFrame):
+            return nextFrame(migrator = wandererMigrator, breeder = simpleProximityBreeder, mutator = nullMutator)
+        def cond(sims):
+            return False
+        fail = {"v": 0}
+        gens = generatePopulationPure(2**32, firstGeneration, nextGeneration)
+        with open(".testCondWriter", "w") as testFile:
+            writePopulationConditional(testFile, gens, cond)
+        with open(".testCondWriter", "r") as testFile:
+            def unpackLines(lines):
+                for line in lines:
+                    for char in line:
+                        yield char
+            mustBeTwoOhTwo = 0
+            for char in unpackLines(testFile.readlines()):
+                if char == "[" or char == "]":
+                    mustBeTwoOhTwo += 1
+        self.assertTrue(mustBeTwoOhTwo == 202)
+
     def testMater(self):
         sims = make4Sims()
         for i in range(100):
@@ -92,7 +116,6 @@ class TestGenerateGraph(unittest.TestCase):
         E = 5.0/6
         D5sigma = sigmaBinomial(100, D, 5)
         E5sigma = sigmaBinomial(100, E, 5)
-
         self.assertAlmostEquals(D5sigma, 23.57, delta=0.1)
         self.assertAlmostEquals(E5sigma, 18.6, delta=0.1)
         unsuccessfulSims = [createRandomlyPositionedSim() for i in range(size)]

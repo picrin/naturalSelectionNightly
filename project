@@ -87,7 +87,7 @@ while [ $# -ge 1 ]; do
                           fi
                             
                           shift
-                          python3 $SCRIPT_DIR/runExperiments.py $rev "$@"
+                          python $SCRIPT_DIR/runExperiments.py $rev "$@"
                           if [ $? ]; then
                             echo "" > /dev/null
                             exit 0

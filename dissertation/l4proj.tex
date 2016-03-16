@@ -98,12 +98,7 @@
 
 The publication of ``On the Origin of Species'' \parencite{darwin59} is generally accepted to be a founding stone of still vigorously researched field of evolutionary biology. Over the years, as the understanding of the field deepened, it became clear that certain scientific questions within the field can only be answered by obtaining progress in related fields, like establishing laws governing inheritance (genetics) \parencite{mendel}, understanding the role of organic molecules in the process of inheritance (molecular biology) \parencite{watson53}, understanding population dynamics of predator-prey system using both continuous and discrete methods (mathematical biology), understanding the character of population variability at molecular level (neutral theory of molecular evolution, Markov processes) \parencite{kimura68, dayhoff73}, studying of historical populations (archaeology, anthropology, linguistics) \parencite{dubois}, proposing and verifying hypotheses about populations based on quantitative evidence (statistics) \parencite{bronzeAgeEurasia}, modeling and simulating biological systems \textit{in silico} (systems biology), and many others.
 
-\ifdebug
-  Next paragraph does not have to be included in the final version of the dissertation.
-
-While the research presented in this work falls within the realm of computational biology, one should understand the difficulty of both undertaking the research in the field and presenting the results, namely, the broadness of topics and tools involved, which need to be understood and taken into account if the research is to be of any significance. A part of the struggle in communication is one of vocabulary, as each of the related fields uses specialized jargon, and researches with expertise in one field might not understand the other fields' jargon. To ease this difficulty a glossary of technical terms in use.
-
-\fi
+While the research presented in this work falls within the realm of computational biology, when referring to other, connected fields we might occasionally need specialized jargon. A glossary of technical terms in use is included at the end of this work. Throughout the text words and phrases in bold (e.g. \gls{autosomal}) are explained in the glossary.
 
 \section{Research question}
 The scientific question that we will try to answer in this piece of work is directly connected with evolution by natural selection and perhaps might have even occurred to Darwin himself:
@@ -170,19 +165,13 @@ We can use our assumptions \ref{genotypes}, \ref{dominance}, \ref{offspring} to 
 
 Finally, we have to remark that the assumption \ref{offspring} may not be correct in rare cases of \gls{sex-linked} characteristics (e.g. colour-blindess). This research will focus exclusively on \gls{autosomal} genes.
 
-\subsection{Hardy-Weinberg principle}
+\subsection{Hardy-Weinberg equilibrium.}
 
 \begin{samepage}
-Let us desribe a distribution of genotypes in the population as the ratio of dominant homozygotes to heterozygotes to recessive homozygotes, symbolically $$p:2q:r$$ $2q$ appears in the ratio to ease computation.
+Let us desribe a distribution of genotypes in the population as the ratio of dominant homozygotes to heterozygotes to recessive homozygotes, symbolically $$p:2q:r$$ $2q$ appears in the ratio to ease the computation.
 \end{samepage}
 
-The ingenious insight of \cite{hardy08} is in observing that for certain values of $p$, $q$ and $r$, the ratio will stay unchanged from generation to generation; such ratios he calls ``stable'', whereas for other ``unstable'' ratios, the offspring will eventually rich a ``stable'' configuration. To define the exact meaning of stable asdasd let us write in full generality a mass density function for any infinite, randomly breeding population
-
-[here we need to give a proof that if the ratios are p:2q:r, then eventually ]
- 
-\subsection{Work of Fisher}
-
-\subsection{Branching Processes}
+The ingenious insight of \cite{hardy08} is in observing that for certain values of $p$, $q$ and $r$, the ratio will stay unchanged from generation to generation; ratios with this property he calls ``stable''. Hardy gives conditions for stability, and shows that ratios that aren't stable converge to ``stable'' ratios as the population develops. Hardy's argument is based on assuming an arbitrary ratio in the parent generation and computing the ratio of the children's generation. He accomplishes that using a table much like \ref{offspringTable}, and then solving a system of three degree-2 polynomials in three indeterminates: $p$, $q$ and $r$. The result, $q^{2}=pr$, is a necessary and sufficient condition for the ratio to be stable. We have to remark a few assumptions made by Hardy for his proof of the stability condition. Namely, the population is assumed to be isolated, randomly mating, it is assumed to be large, and the number of men to women is assumed to be equal. Hardy's argument does not take into account natural selection.
 
 \section{Coalescent method}
 

@@ -4,6 +4,9 @@ from .pointPicking import *
 import random, bisect
 import json, sys
 
+if sys.version_info < (3,):
+   range = xrange
+
 def trackSim(sim, allSims):
     allSims.append(sim)
 
@@ -193,6 +196,15 @@ def serialiseSim(sim, generationNo, first = False, last = False):
         shallowCopyNoParents["generation"] = "middle"
     return shallowCopyNoParents
 
+def alleleProportionSims(sims):
+    count = 0
+    for sim in sims:
+        if sim["genotype"]["hasCopy1"]:
+            count += 1
+        if sim["genotype"]["hasCopy2"]:
+            count += 1
+    return count
+
 def generateToyPopulation(fileObj):
     """
     this gives a population, which has one sim who is a carrier of a dominant allele.
@@ -209,7 +221,7 @@ def generatePopulationPure(generationNo, firstGeneration, nextGeneration):
     """
     Population is generated using functions firstGeneration and nextGeneration. Simulation is continued for generationNo discrete generations, generationNo must be greater than 1.
     For a good example usage look at the implementation of generateToyPopulation, especially how to define firstGeneration and nextGeneration.
-    """    
+    """
     sims, nextFrame = firstGeneration()
     yield sims
     for i in range(generationNo):
@@ -227,21 +239,41 @@ def writePopulation(fileObj, generations):
     """
     Writes json representation of a generated population to a file.
     """
-    def writeAllSims(sims, generationNo, first=False, last=False):
+    def nullCond(sims):
+        return True
+    writePopulationConditional(fileObj, generations, nullCond)
+class FlowControl(Exception):
+    def __init__(self):
+        pass
+
+def writePopulationConditional(fileObj, generations, cond):
+    """
+    Writes json representation of a generated population to a file, conditionally on cond.
+    """
+    haveWritten = {"v":False}
+    def writeAllSims(sims, generationNo, cond, first=False, last=False):
         firstSim = first
         if firstSim:
            fileObj.write("[")
+           haveWritten["v"] = True
         for i, sim in enumerate(sims):
             if not firstSim:
                 fileObj.write(",\n")
             firstSim = False
             json.dump(serialiseSim(sim, generationNo, first=first, last=last), fileObj)
-    sims = next(generations)
-    first = True
-    for i, nextSims in enumerate(generations):
-        writeAllSims(sims, i, first=first)
-        first = False
-        sims = nextSims
-    i += 1
-    writeAllSims(sims, i, last=True)
-    fileObj.write("]")
+        if not cond(sims):
+            raise FlowControl()
+    try:
+        sims = next(generations)
+        first = True
+        for i, nextSims in enumerate(generations):
+            writeAllSims(sims, i, cond, first=first)
+            first = False
+            sims = nextSims
+        i += 1
+        writeAllSims(sims, i, cond, last=True)
+    except FlowControl as e:
+        pass
+    finally:
+        if haveWritten["v"]:
+            fileObj.write("]")

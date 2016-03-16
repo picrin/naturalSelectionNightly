@@ -188,7 +188,3 @@ def quickMRCA(simulation, generationNo, tracersNo):
         oldFrontier = frontier
         frontier = [key for key in nextFrontier]
         currentGen -= 1
-        #if currentGen == 0:
-        #    cleanupTracers(simulation, oldFrontier)            
-        #    cleanupTracers(simulation, frontier)
-        #    return None
