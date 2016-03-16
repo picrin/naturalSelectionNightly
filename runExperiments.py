@@ -6,6 +6,7 @@ import os.path
 import random
 import shutil
 import scipy.stats
+import json
 
 random.seed(0)
 
@@ -194,6 +195,7 @@ class mrca2(s2):
         lsresult = ls(resultDir)
         mrcaResults = {}
         for path in lsresult:
+            print("*")
             terms = list(splitAndKeep(path, ["_", ":"]))
             typeIndex = terms.index("typ")
             if terms[typeIndex + 2] == "sim":
@@ -215,15 +217,33 @@ class mrca2(s2):
                         mrcaResults[size] = [T_mrca]
         return mrcaResults
     def run(self):
-        samples = self.mrcaCompute(False)
-        controls = self.mrcaCompute(True)
-        for key in samples:
-            sample = samples[key]
-            control = controls[key]
-            print("Ties corrected Mann-Whitney U-test for population of size:", key)
-            print(scipy.stats.mannwhitneyu(sample, control))
-            print("Continuous Kologomorov-Smirnov. Ununjusted for discrete values! For population of size:", key)
-            print(scipy.stats.ks_2samp(sample, control))
+        lsresult = ls(resultDir)
+        if "mrca2" not in lsresult:
+            samples = self.mrcaCompute(False)
+            controls = self.mrcaCompute(True)
+            for key in samples:
+                sample = samples[key]
+                control = controls[key]
+                with open(p(resultDir, "mrca2"), "w") as r:
+                    json.dump({"sample":sample, "control": control}, r)
+
+class proc2(mrca2):
+    def __init__(self):
+        pass
+    def run(self):
+        with open(p(resultDir, "mrca2"), "r") as r:
+            data = json.load(r)
+            for s in ["sample", "control"]:
+                print(s)
+                print(scipy.average(data[s]))
+                print(scipy.median(data[s]))
+                print(min(data[s]))
+                print(max(data[s]))
+                print(scipy.stats.mode(data[s]))
+            print("Ties corrected Mann-Whitney U-test for population of size:")
+            print(scipy.stats.mannwhitneyu(data["sample"], data["control"]))
+            print("Continuous Kologomorov-Smirnov. Ununjusted for discrete values! For population of size:")
+            print(scipy.stats.ks_2samp(data["sample"], data["control"]))
 
 def workflow(classa):
     simulation = classa()
@@ -241,3 +261,7 @@ if "mrca" in sys.argv:
     
 if "mrca2" in sys.argv:
     workflow(mrca2)
+
+if "proc2" in sys.argv:
+    workflow(proc2)
+

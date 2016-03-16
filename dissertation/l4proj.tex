@@ -2,6 +2,7 @@
 
 \usepackage{url}
 \usepackage{fancyvrb}
+\usepackage{amsmath}
 \usepackage{amsthm}
 \usepackage[final]{pdfpages}
 \usepackage{hyperref}
@@ -13,9 +14,38 @@
 \makeglossaries
 \glstoctrue
 
+%explain homozygous, heterozygous, dominant, sweep, polymorphism example of polymorphism: impression of bitterness while eating brussel sprouts, linkage equilibrium, panmictic population, allele, epigenetics, probability density function.
+%\fi
+
+\newglossaryentry{homozygous}{
+  name=homozygous,
+  description={A homozygous individual possesses two identical alleles of a gene, either both encoding a given trait or the lack of it. A homozygous individual without a given trait is called homozygous recessive for that trait. A homozygous individual with a given trait is called homozygous dominant}
+}
+
+\newglossaryentry{selective sweep}{
+  name=selective sweep,
+  description={When natural selection exerts positive or negative selective pressure on individuals possessing a given trait the alleles encoding this trait will respectively dominate the population or disappear from the population. The process is referred to as selective sweep.}
+}
+
+\newglossaryentry{heterozygous}{
+  name=heterozygous,
+  description={A heterozygous individual possess two different alleles of a gene, one of which encodes a given trait, and one of which encodes a lack of the trait}
+}
+
+\newglossaryentry{dominant}{
+  name=dominant,
+  description={A dominant inheritance scheme is a scheme in which individuals possessing one or two copies of a gene encoding the trait exhibit the trait. An individual can be called homozygous dominant for a trait if it is homozygous and possesses the trait}
+}
+
+\newglossaryentry{recessive}{
+  name=recessive,
+  description={The recessive inheritance scheme is a scheme in which only individuals possessing two copies of a gene encoding the trait exhibit the trait. An individual can be called homozygous dominant for a trait if it is homozygous and it does not possess the trait}
+}
+
+
 \newglossaryentry{autosomal}{
   name=autosomal,
-  description={An autosomal gene is located on one of the numbered chromosomes (as opposed to the sex chromosome). Organisms typically have a pair of autosomal chromosomes, one from the mother and one from the father}
+  description={An autosomal gene is located on one of the numbered chromosomes (as opposed to the sex chromosomes). Organisms typically have a pair of autosomal chromosomes, one from the mother and one from the father}
 }
 
 \newglossaryentry{polyploid}{
@@ -25,7 +55,7 @@
 
 \newglossaryentry{chromosome}{
   name=chromosome,
-  description={chromosome is a collections of genes. Organisms usually have several chromosomes, including one or two, which define sex}
+  description={chromosome is a collections of genes. Organisms usually have several chromosomes, usually classified into numbered chromosmes, which host autosomal genes, and sex chromosomes, which host sex-linked genes}
 }
 
 
@@ -100,7 +130,7 @@ The publication of ``On the Origin of Species'' \parencite{darwin59} is generall
 
 While the research presented in this work falls within the realm of computational biology, when referring to other, connected fields we might occasionally need specialized jargon. A glossary of technical terms in use is included at the end of this work. Throughout the text words and phrases in bold (e.g. \gls{autosomal}) are explained in the glossary.
 
-\section{Research question}
+\section{Research question}\label{TMRCA}
 The scientific question that we will try to answer in this piece of work is directly connected with evolution by natural selection and perhaps might have even occurred to Darwin himself:
 
 \begin{quest}
@@ -136,12 +166,12 @@ Firstly, we will be acting under the assumption that each animal characteristic 
 \end{assum}
 
 \begin{assum}\label{dominance}
-  the mode of expression of the characteristic, which can be either dominant or recessive.
+  the mode of expression of the characteristic, which can be either \gls{dominant} or \gls{recessive}.
 \end{assum}
 
 We have to remark that these assumptions may not be obviously true for certain seemingly continuous, partially environment-dependent characteristics such as height, weight or individual's position in the autism spectrum. However experiments using various methods have consistently asserted that ~80\% of human height is inheritable \parencite{heightTwins, heightJustSiblings}. Although the challenge of identifying all genes affecting height is still open, recent progress using a cross-discipline technique called Genome Wide Association Study (GWAS) identified over 40 genes, which contribute 5 percent points towards total height heritability. To play devil's advocate further, it has been recently established that important traits can be acquired and inherited by non-genetic means in both plants \parencite{palmOilKernel}, non-human animals \parencite{dolinoy_maternal_2007} and humans \parencite{yehuda_holocaust_2015}, giving rise to the field of Epigenetics. We shall consider both environmental and epigenetic factors to be outside of the scope of this research. A curious reader is referred to an accessible, popular science discussion of the topic of GWAS, height inheritance and epigenetics by \textcite{GWASDiscussion}. A concerned reader should find assurance in that a great many traits do obey Mendelian's Inheritance straightforwardly. A comprehensive database for human traits, maintained by John Hopkins University at omim.org \parencite{omim16}, finds 24617 such genes using the match-all wildcard $*$, including 22044 \gls{autosomal} genes (as of \date{March 13, 2016}).
 
-Before we proceed let us recall the following, standard notation: if an \gls{allele} encoding a trait is determined to be dominant we will represent it with capital letter, e.g. $\mathrm{A}$. In such case a lack of trait will be considered recessive and be denoted as $\mathrm{a}$. Under the assumption \ref{genotypes}, we will consider all three possible genotypes: \genotype{A}{A} -- homozygous dominant, \genotype{A}{a} -- heterozygous and \genotype{a}{a} -- homozygous recessive. Of these the first two the genotypes \genotype{A}{A} and \genotype{A}{a} will result in an individual possessing the characteristic. An individual with the last genotype \genotype{a}{a} will not exhibit the trait. Analogously, one can consider a trait inherited recessively, and in such case the above description is true when ``trait'' is mutually exchanged with ``lack of trait'', ``not exhibit the trait'' with ``exhibit the trait'', etc.
+Before we proceed let us recall the following, standard notation: if an \gls{allele} encoding a trait is determined to be \gls{dominant} we will represent it with capital letter, e.g. $\mathrm{A}$. In such case a lack of trait will be considered \gls{recessive} and be denoted as $\mathrm{a}$. Under the assumption \ref{genotypes}, we will consider all three possible genotypes: \genotype{A}{A} -- homozygous dominant, \genotype{A}{a} -- heterozygous and \genotype{a}{a} -- homozygous recessive. Of these the first two the genotypes \genotype{A}{A} and \genotype{A}{a} will result in an individual possessing the characteristic. An individual with the last genotype \genotype{a}{a} will not exhibit the trait. Analogously, one can consider a trait inherited recessively, and in such case the above description is true when ``trait'' is mutually exchanged with ``lack of trait'', ``not exhibit the trait'' with ``exhibit the trait'', etc.
 
 Further, we will assume that
 \begin{assum}\label{offspring}
@@ -188,15 +218,65 @@ Write about Rohde and Olsen's work. In particular, write about migration around 
 \chapter{Report of research work}\label{research}
 This should bring out the insights and new ideas produced by the review and may continue to suggest further practical work, which would test these ideas. Most importantly, the report should clearly state the overall value of the work which has been done - this should not be lost in a welter of detail.
 
-Here I need to discuss the 
+\section{Selective Sweep in Randomly Mating Population}
+
+An experiment was carried out in order to quantify the effect of positive selection on relatedness in a small, randomly mating population. The relatedness was measured using $T_{MRCA}$ (as discussed in chapter \ref{intro}) of a carefully selected generation in this population.
+
+Throughout the experiment randomness was obtained from python's default random module, which implements Mersenne Twister, a good choice of pseudo-randomness for scientific simulations \parencite{Matsumoto98}. Let us explain the experiment's design.
+
+The initial simulation size was set to be 100 sims, of random sex, and uniformly distributed on the unit sphere. One of the sims, chosen at random, was assigned a \gls{heterozygous} genotype. All other sims were assigned \gls{homozygous} recessive genotypes. The chosen mode of gene expression was \gls{dominant}. The presence of a trait in an invidual would give that individual a comparative breeding advantage of 5\% over an individual without the trait. Each subsequent generation of the simulation was obtained as follows. For each sim in the next generation, first parent was chosen at random from the previous generation. The probability of any sim $s$ being chosen as the first parent can be expressed by a formula
+$$p(s, S) = \frac{f(s)}{\sum_{s' \in S}^{}f(s')}$$
+where $S$ is the set of all sims in the previous generation (including $s$), and $f(s)$, the sim's absolute fitness, is defined by
+$$
+f(s) = \begin{cases}
+  1.05 \text{, if sim $s$ has the trait} \\
+  1 \text{, if sim $s$ does not have the trait} \\
+\end{cases}
+$$
+The second parent was chosen to be the closest sim of opposite sex (as measured by the great circle distance on the unit sphere). The number of sims in the next generation was adjusted to be equal to the number of sims in the previous generation. After birth and before mating each sim migrated to a randomly chosen place on the unit sphere. This model closely follows the one described by \cite{peng10}. It differs from the model of \cite{rohde04} by usage of discrete generations (the previous generation dies before the next generation can breed) as opposed to continuous real-life like generations.
+
+The simulation was run until the trait had spread to the entire population or the trait died out. In the former case, the simulation was included in the sample, in the latter case the simulation was discarded. It is worth pointing out that the length of each simulation measured by generations was variable, i.e. it did not always take the same number of generations for a simulation to reach full trait saturation.
+
+The investigated sample consisted of 200 simulation runs of the experiment described above. For each simulation in this sample, a control simulation was generated with the relative advantage of possessing the trait removed (all sims equally likely to become the first parent) and the length in generations equal to that of the corresponding observation from the sample. This had given a control sample of 200 sims.
+
+Both the investigated and the control sample were processed in the following way: for each simulation in either sample a generation exactly in the middle of the simulation (rounded down if the number of generations happened to be odd) was chosen, and $T_{MRCA}$ was computed for this generation.
+
+This had resulted in two samples of 200 non-negative integers each. The table \ref{populationTable} gives some common statistics for these numbers. Looking at the table we can infer that both the sample and the control are actually collections of integers in the interval $[5, 7]$. We expect a lot of them to be repeated.
+
+\begin{table}[]
+    \centering
+    \begin{tabular}{|c|c|c|}
+    \hline
+     & sample & control \\ \hline\hline
+     average & 6.415 & 6.37 \\ \hline
+     median & 6 & 6 \\ \hline
+     mode & 7 & 7 \\ \hline
+     min & 5 & 7 \\ \hline
+     max & 5 & 7 \\ \hline
+    \end{tabular}
+    \caption{statistics for Selective Sweep in Randomly Mating Population experiment}
+    \label{populationTable}
+\end{table}
+
+The null hypothesis was chosen so that both the investigated sample and the control sample $T_{MRCA}$s come from the same distribution. This hypothesis was tested using Mann-Whitney U-test (ties adjusted and continuity corrected) and Kolomogorov-Smirnov (without continuity correction) two sample test. In Table \ref{nullHypothesisTable} we report the p-values.
+
+\begin{table}[]
+    \centering
+    \begin{tabular}{|c|c|c|}
+    \hline
+    & Mann-Whitney & Kolomogorov-Smirnov \\ \hline
+    p-values & 0.258987 & 0.999987 \\ \hline
+    \end{tabular}
+    \caption{p-values of null-hypothesis for Selective Sweep in Randomly Mating Population experiment}
+    \label{nullHypothesisTable}
+\end{table}
+
 
 \chapter{Report of practical work}\label{practical}
 \ifdebug
 This section should summarize the practical work done and its results, concentrating on any unusual or original features. Enough detail should be included to assure the reader that the work has been professionally and competently done, and that the results are trustworthy. Any design features, algorithms and data structures of special interest should be described. Documentation to full software engineering standards is not required.
-
-glossary locus, loci, polyploid, chromosome, DAG, extension modules
-
 \fi
+
 \section{Natural Selection Framework}
 An important contribution of this research work is an implementation of a forward-time population modeling framework. The framework is then used to investigate the research question that we're interested in by focusing on particular population models of our interest. However, the framework does not force its users into any particular choice of the model. A wide range of real-life populations can be modeled by implementing appropriate mutation, breeding, mating, natural selection, migration and inheritance schemes. The schemes are implemented as python functions, and can be glued together using the framework's API into a full population model. This approach is not dissimilar from simuPOP \parencite{peng05}, a particularly successful forward-time simulation framework, which has been used extensively to model populations under selective pressure, for example to model population divergence due to local adaptation \parencite{naturalSelectionSignatures16}. Let us discuss the design of the framework focusing on similarities and differences with simuPOP.
 
@@ -213,7 +293,7 @@ Most notably, simuPOP does not allow for graph-theoretic analysis of simulated p
 
 \subsection{Performance}
 
-SimuPOP achieves low memory and CPU footprint by using python's \textit{extension modules}, which allows more direct access to underlying hardware than via pure python. However, there are significant drawbacks of using \textit{extension modules}.
+SimuPOP achieves low memory and CPU footprint by using python's \textit{extension modules}, which allow more direct access to underlying hardware than pure python. However, there are significant drawbacks of using \textit{extension modules}.
 
 Firstly, development is slowed down by higher cognitive burden put on the programmer, as \textit{extension modules} are typically written in C++, which is arguably less user-friendly than pure python. The following snippet of simuPOP's source code serves as good example:
 

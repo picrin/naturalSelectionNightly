@@ -1,0 +1,18 @@
+As part of my level 4 research project I have created a framework for simulating evolutionary processes in randomly mating poulations. I have subsequently used the created framework to investigate the effect of selective pressure on relatedness of individuals in the population. The purpose of this video is to provide a visual representation of the simulated process. Green and blue circles on the screen represent "sims" that is, simulated individuals. Green circles represent males, and blue circles represnt females. Each sim poSEsses a genome represented by two small circles, top left and top right. Empty circle represents a version of a gene which doesn't carry an advantegous feature, while filled circle represents posession of a gene that carries an advantage. For the purpose of this simulation, let us assume a dominant inheritance scheme, which means that it is enough to posses a single filled circle to possess a full advantegous feature.
+
+Let our sims choose their mates and reproduce.
+
+As we can see, the left couple has managed to produce offspring consisting of two male individuals. Each individual inherits the gene on the left from their father, and the gene on the right from their mother. Moreover each of parent's genes has a 50% chance of being inherited by any single child. In the case of the left child, the left gene of the father and the left gene of the mother are inherited, while the other two genes miss out. They might get lucky in subsequent reproduction.
+
+Let us observe how the couple on the right does not have any children with the advantegous gene version, as none of the parents could provide it.
+
+It is time for the second generation to mate and produce offspring.
+
+And for the third generation.
+
+Let us notice how the only sim in the generation, which did not reproduce was the sim without the advantegous feature. The reason could be that the sim didn't survive to adulthood or couldn't find a mate. The chance of becoming a parent is conditional on possesing the advantageous feature, and for any sim is determined using a probability mass function, details of which I described in my dissertation.
+
+As can be easily seen from our example the sims with the parent-child relation constitute a directed acyclic graph. For each generation A, B, C and D we can try to copute the smallest number of generations we have to move back in time to reach a common ancestor. We call this non-negative integer T_MRCA, and for generation D T_MRCA will have a value of 1, because the most recent comon ancestor of this generation is the sim C-1. For generation C, any sim in generation A will be an MRCA, so the T_MRCA for this generation is 2. For generation A and B T_MRCA is not defined.
+
+In my project I have focused on investigating to what extent natural selection affects the values of T_MRCA in randomly mating populations. The results of my investigation I will present on Thursday.
+
