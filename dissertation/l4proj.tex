@@ -96,23 +96,19 @@
 
 \begin{document}
 
-\title{The effects of natural selection on the shape of population graph}
+\title{The effect of natural selection on relatedness in randomly mating population}
 \author{Adam Kurkiewicz}
 \date{March 24, 2016}
 \maketitle
 
 \begin{abstract}
-\ifdebug
-  Placeholder for the abstract, which will be written at the end.
-\fi
+
+A flexible population simulation framework is designed and implemented in Python. The framework allows to simulate biological populations, whose evolution is specified by the user, through implementing python functions defining desired breeding, mating, mutation, migration and inheritance schemes. The effect of running each simulation is a file containing a complete information on the entire history of the population, including genotypes of all simulated individuals, parent-child relationships, the generation number each sim belonged to when alive, and the location it occupied. A file created in such way is processed algorithmically and statistically in order to answer the research question: Does natural selection affect relatedness in a species? While we fail to reach a definite conclusion using the methods employed, the areas for furhter investigation are proposed.
 
 \end{abstract}
 
 \educationalconsent
-%
-%NOTE: if you include the educationalconsent (above) and your project is graded an A then
-%      it may be entered in the CS Hall of Fame
-%
+
 \tableofcontents
 %==============================================================================
 \chapter{Introduction}
@@ -201,11 +197,15 @@ Finally, we have to remark that the assumption \ref{offspring} may not be correc
 Let us desribe a distribution of genotypes in the population as the ratio of dominant homozygotes to heterozygotes to recessive homozygotes, symbolically $$p:2q:r$$ $2q$ appears in the ratio to ease the computation.
 \end{samepage}
 
-The ingenious insight of \cite{hardy08} is in observing that for certain values of $p$, $q$ and $r$, the ratio will stay unchanged from generation to generation; ratios with this property he calls ``stable''. Hardy gives conditions for stability, and shows that ratios that aren't stable converge to ``stable'' ratios as the population develops. Hardy's argument is based on assuming an arbitrary ratio in the parent generation and computing the ratio of the children's generation. He accomplishes that using a table much like \ref{offspringTable}, and then solving a system of three degree-2 polynomials in three indeterminates: $p$, $q$ and $r$. The result, $q^{2}=pr$, is a necessary and sufficient condition for the ratio to be stable. We have to remark a few assumptions made by Hardy for his proof of the stability condition. Namely, the population is assumed to be isolated, randomly mating, it is assumed to be large, and the number of men to women is assumed to be equal. Hardy's argument does not take into account natural selection.
+The ingenious insight of \cite{hardy08} is in observing that for certain values of $p$, $q$ and $r$, the ratio will stay unchanged from generation to generation; ratios with this property he calls ``stable''. Hardy gives conditions for stability, and shows that ratios that aren't stable converge to ``stable'' ratios as the population develops. Hardy's argument is based on assuming an arbitrary ratio in the parent generation and computing the ratio of the children's generation. He accomplishes that using a table much like \ref{offspringTable}, and then solving a system of three degree-2 polynomials in three indeterminates: $p$, $q$ and $r$. The result, $q^{2}=pr$, is a necessary and sufficient condition for the ratio to be stable. We have to remark a few assumptions made by Hardy for his proof of the stability condition. Namely, the population is assumed to be isolated, randomly mating, it is assumed to be large, and the number of men and women is assumed to be equal. Hardy's argument does not take into account natural selection.
+
+\section{Work of Fischer}
+
+The work of Ronald Fischer had drastic influence on the landcape of both statistics and quantitative biology. Apart from introducing influential statistical terminology (such as the concept of variance, defined as standard deviation squared) [todo quote original Fischer's paper], Fischer gave modern shape to the notion of null hypothesis testing. He also invented a range of statistical methods, such as one-way analysis of variance (ANOVA). On the biological side, Fischer was behind the realisation that sexual selection is comparatively stronger, and more consistent than natural selection. He formulated the concept of Fischerian runaway and proposed the sexy sons hypothesis. His work on coalescent processes gave rise to the coalescent method, which is of interest for the project, as it could be potentially used to answer the research question.
 
 \section{Coalescent method}
 
- all but the most simple models of the coalescent method , which can make it prohibitively
+The coalescent method, in its most basic form, is used to predict the time (in generations) for any genetic trait to reach the individual it originated from ("coalesce"). The method is usually employed for a group of individuals with unknown predecessor structure, which makes it suitable for use in situations when data regarding only extant individuals is available. Given an extant population, the coalescent method works backwards in time, with generations in hypothetical ancestry assigned probabilities of containing the coalescent. Although in this basic application the coalescent method is relatively straightforward to apply, once natural selection is included the method gets subtle and very complicated, with major difficulties being mathematical in nature. For a comprehensive review, the reader is referred to [include this massive paper "natural selection and the coalescent method"]. 
 
 \section{Forward-Time Modelling}
 
@@ -241,7 +241,7 @@ The investigated sample consisted of 200 simulation runs of the experiment descr
 
 Both the investigated and the control sample were processed in the following way: for each simulation in either sample a generation exactly in the middle of the simulation (rounded down if the number of generations happened to be odd) was chosen, and $T_{MRCA}$ was computed for this generation.
 
-This had resulted in two samples of 200 non-negative integers each. The table \ref{populationTable} gives some common statistics for these numbers. Looking at the table we can infer that both the sample and the control are actually collections of integers in the interval $[5, 7]$. We expect a lot of them to be repeated.
+This had resulted in two samples of 200 non-negative integers each. The table \ref{populationTable} gives some common statistics for these numbers. Looking at the table we can infer that both the sample and the control are actually collections of integers in the interval $[5, 7]$. We expect a lot of repetitions.
 
 \begin{table}[]
     \centering
@@ -251,8 +251,8 @@ This had resulted in two samples of 200 non-negative integers each. The table \r
      average & 6.415 & 6.37 \\ \hline
      median & 6 & 6 \\ \hline
      mode & 7 & 7 \\ \hline
-     min & 5 & 7 \\ \hline
-     max & 5 & 7 \\ \hline
+     min & 5 & 5 \\ \hline
+     max & 7 & 7 \\ \hline
     \end{tabular}
     \caption{statistics for Selective Sweep in Randomly Mating Population experiment}
     \label{populationTable}

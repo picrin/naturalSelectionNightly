@@ -1,4 +1,5 @@
 #/bin/sh
+set -e
 projName="l4proj"
 pdflatex $projName
 biber $projName
