@@ -10,7 +10,44 @@
 \usepackage{listings}
 \usepackage[toc]{glossaries}
 \usepackage[style=authoryear, backend=biber]{biblatex}
-\usepackage{graphicx}
+%\usepackage{graphicx}
+\usepackage{algorithm}
+\usepackage{algpseudocode}
+\usepackage{array,multirow,graphicx}
+
+% FIX OVERFLOWING URLS =========================================================
+
+%\PassOptionsToPackage{noend}{algpseudocode}% comment out if want end's to show
+\makeatletter
+\def\BState{\State\hskip-\ALG@thistlm}
+%\makeatother
+
+% start with some helper code
+% This is the vertical rule that is inserted
+\newcommand*{\algrule}[1][\algorithmicindent]{\makebox[#1][l]{\hspace*{.5em}\vrule height .75\baselineskip depth .25\baselineskip}}%
+
+\newcount\ALG@printindent@tempcnta
+\def\ALG@printindent{%
+    \ifnum \theALG@nested>0% is there anything to print
+        \ifx\ALG@text\ALG@x@notext% is this an end group without any text?
+            % do nothing
+            \addvspace{-3pt}% FUDGE for cases where no text is shown, to make the rules line up
+        \else
+            \unskip
+            % draw a rule for each indent level
+            \ALG@printindent@tempcnta=1
+            \loop
+                \algrule[\csname ALG@ind@\the\ALG@printindent@tempcnta\endcsname]%
+                \advance \ALG@printindent@tempcnta 1
+            \ifnum \ALG@printindent@tempcnta<\numexpr\theALG@nested+1\relax% can't do <=, so add one to RHS and use < instead
+            \repeat
+        \fi
+    \fi
+    }%
+\usepackage{etoolbox}
+% the following line injects our new indent handling code in place of the default spacing
+\patchcmd{\ALG@doentity}{\noindent\hskip\ALG@tlm}{\ALG@printindent}{}{\errmessage{failed to patch}}
+\makeatother
 
 \addbibresource{l4proj.bib}
 \makeglossaries
@@ -87,11 +124,8 @@
   description={A placeholder for a gene. Locus is situated on a chromosome and can hold a version of the gene -- see \gls{allele}. If the locus is situated on one of the numbered chromosomes, the gene is called \gls{autosomal}. If the gene is on one of the sex chromosomes, the gene is called \gls{sex-linked}}
 }
 
-
-
 \newtheorem*{quest}{Research Question}
 \newtheorem{assum}{Assumption}
-\newcommand{\Tmrca}{T\raisebox{-.4ex}{\scriptsize MRCA}}
 \newcommand{\genotype}[2]{\ensuremath{(\mathrm{#1}, \mathrm{#2})}}
 
 \renewcommand*{\glstextformat}{\textbf}
@@ -135,7 +169,7 @@ A flexible population simulation framework is designed and implemented in Python
 
 \section{Context of the work}
 
-The publication of ``On the Origin of Species'' \parencite{darwin59} is generally accepted to be a founding stone of still vigorously researched field of evolutionary biology. Over the years, as the understanding of the field deepened, it became clear that certain scientific questions within the field can only be answered by obtaining progress in related fields, like establishing laws governing inheritance (genetics) \parencite{mendel}, understanding the role of organic molecules in the process of inheritance (molecular biology) \parencite{watson53}, understanding population dynamics of predator-prey system using both continuous and discrete methods (mathematical biology), understanding the character of population variability at molecular level (neutral theory of molecular evolution, Markov processes) \parencite{kimura68, dayhoff73}, studying of historical populations (archaeology, anthropology, linguistics) \parencite{dubois}, proposing and verifying hypotheses about populations based on quantitative evidence (statistics) \parencite{bronzeAgeEurasia}, modeling and simulating biological systems \textit{in silico} (systems biology), and many others.
+The publication of ``On the Origin of Species'' \parencite{darwin59} is generally accepted to be a founding stone of still vigorously researched field of evolutionary biology. Over the years, as the understanding of the field deepened, it became clear that certain scientific questions within the field can only be answered by obtaining progress in related fields, like establishing laws governing inheritance (genetics) \parencite{mendel}, understanding the role of organic molecules in the process of inheritance (molecular biology) \parencite{watson53}, understanding population dynamics of predator-prey system using both continuous and discrete methods (mathematical biology), understanding the character of population variability at molecular level (neutral theory of molecular evolution, Markov processes) \parencite{kimura68, dayhoff73}, studying historical populations (archaeology, anthropology, linguistics) \parencite{dubois}, proposing and verifying hypotheses about populations based on quantitative evidence (statistics) \parencite{bronzeAgeEurasia}, modeling and simulating biological systems \textit{in silico} (systems biology), and many others.
 
 While the research presented in this work falls within the realm of computational biology, when referring to other, connected fields we might occasionally need specialized jargon. A glossary of technical terms in use is included at the end of this work. Throughout the text words and phrases in bold (e.g. \gls{autosomal}) are explained in the glossary.
 
@@ -146,9 +180,9 @@ The scientific question that we will try to answer in this piece of work is dire
 Does natural selection affect relatedness in a species? Are individuals in a species under selective pressure more likely to be closely related?
 \end{quest}
 
-We will seek to answer this question using a computer simulation. First, we have to decide on how to measure relatedness. We will follow \cite{rohde04} and focus on computing time (in generations) that is taken for a group of simulated individuals to reach a Most Recent Common Ancestor (MRCA). More precisely, we will speak of a \gls{population graph}, which we will define to be a Directed Acyclic Graph (DAG), with vertices representing all individuals ever alive and directed edges representing the parent-child relationship between individuals. Additionally, each vertex will be labeled with complete information on individual's traits. For any point in time all individuals capable of inter-breeding at that point will be referred to as ``generation at time $t$'', or simply ``generation'', if the time can be inferred from the context. An MRCA of a generation at time $t$ will be a common ancestor which is the most recent, i.e. precedes the population by the least number of generations. The time (in generations) that is taken to reach such individual will be denoted by $T_{MRCA}$.
+We will seek to answer these questions using a computer simulation. First, we have to decide on how to measure relatedness. We will follow \textcite{rohde04} and focus on computing time (in generations) that is taken for a group of simulated individuals to reach a Most Recent Common Ancestor (MRCA). More precisely, we will speak of a \gls{population graph}, which we will define to be a Directed Acyclic Graph (DAG), with vertices representing all individuals ever alive and directed edges representing the parent-child relationship between individuals. Additionally, each vertex will be labeled with complete information on individual's traits. For any point in time all individuals at that point will be referred to as ``generation at time $t$'', or simply ``generation'', if the time can be inferred from the context. An MRCA of a generation at time $t$ will be a common ancestor which is the most recent, i.e. precedes the population by the least number of generations. The time (in generations) that is taken to reach such individual will be denoted by $T_{MRCA}$.
 
-There are other, auxiliary questions we will have to answer on our way. Most crucially we will have to decide on such important details of our simulation as the mating scheme, migration, competition for resource, survivability, number of offspring, etc. Often we will be able to use the choices of parameters already made by others, e.g. breeding scheme \parencite{peng10}. We prepare the ground in chapter \ref{review}. Appropriate methodology is decided upon in chapter \ref{methodology}. We discuss the architecture of the computer program which constitutes the solution, and is on its own a valuable contribution to the field, in chapter \ref{practical}. The experiment, which constitutes a novel contribution to the field is discussed in chapter \ref{research}. The conclusions will be drawn in chapter \ref{conclusion}. The source code of all developed computer programs can be accessed on github \parencite{Kurkiewicz16} 
+There are other, auxiliary questions we will have to answer on our way. Most crucially we will have to decide on such important details of our simulation as the mating scheme, migration, competition for resource, survivability, number of offspring, etc. Often we will be able to use the choices of parameters already made by others, e.g. breeding scheme \parencite{peng10}. We prepare the ground in Chapter \ref{review}. Appropriate methodology is decided upon in Chapter \ref{methodology}. We discuss the architecture of the computer program which constitutes the solution, and is on its own a valuable contribution to the field, in Chapter \ref{practical}. The experiment, which constitutes a novel contribution to the field is discussed in Chapter \ref{research}. The conclusions will be drawn in Chapter \ref{conclusion}. The source code of all developed computer programs can be accessed publicly on the internet using the github platform \parencite{Kurkiewicz16}.
 
 % REVIEW OF THE FIELD ==========================================================
 
@@ -159,7 +193,7 @@ There are other, auxiliary questions we will have to answer on our way. Most cru
 Presented work is by no means the first attempt at quantitative study of population genetics. What follows is a review of the most relevant achievements in the field.
 
 \subsection{Early days}
-Ever since three European scientist simultaneously and independently rediscovered \& experimentally confirmed Gregor Mendel's theory of inheritance [find the original works of DeVries, Correns and Tscherma, Roberts, H. F. Plant Hybridization before Mendel. Princeton: Princeton University Press, 1929.], the interplay between Mendelian Inheritance and Darwinian Evolution has been hotly debated. One claim popular at the time has fallaciously asserted that Mendelian Genetics cannot be a correct model of trait inheritance [cite this guy whose name starts with U]. The reasoning at the core of the claim was that dominant alleles over time sweep the entire population, thus eliminating variation within the population, rendering evolution by natural selection impossible. This misconception was debunked in a very short letter to the editor of ``Science'' by a famous English number theorist \parencite{hardy08}. The letter is a truly master example of a presentation of non-trivial mathematical thought in a manner both rigorous and understandable, even to non-experts. Let us recall Mendel's laws of inheritance before we present Hardy's argument.
+Ever since three European scientist simultaneously and independently rediscovered \& experimentally confirmed Gregor Mendel's theory of inheritance \parencite{DeVries00, Tschermak00, Correns00}, the interplay between Mendelian Inheritance and Darwinian Evolution has been hotly debated. One claim popular at the time has fallaciously asserted that Mendelian Genetics cannot be a correct model of trait inheritance \parencite{Yule02}. The reasoning at the core of the claim was that \gls{dominant} alleles over time sweep the entire population, thus eliminating variation within the population, rendering evolution by natural selection impossible. This misconception was debunked in a very short letter to the editor of ``Science'' by a famous English number theorist \parencite{hardy08}. The letter is a truly master example of a presentation of non-trivial mathematical thought in a manner both rigorous and understandable, even to non-experts. Let us recall Mendel's laws of inheritance before we present Hardy's argument.
 
 \subsection{Mendelian Inheritance}
 
@@ -174,7 +208,7 @@ Firstly, we will be acting under the assumption that each animal characteristic 
   the mode of expression of the characteristic, which can be either \gls{dominant} or \gls{recessive}.
 \end{assum}
 
-We have to remark that these assumptions may not be obviously true for certain seemingly continuous, partially environment-dependent characteristics such as height, weight or individual's position in the autism spectrum. However experiments using various methods have consistently asserted that ~80\% of human height is inheritable \parencite{heightTwins, heightJustSiblings}. Although the challenge of identifying all genes affecting height is still open, recent progress using a cross-discipline technique called Genome Wide Association Study (GWAS) identified over 40 genes, which contribute 5 percent points towards total height heritability. To play devil's advocate further, it has been recently established that important traits can be acquired and inherited by non-genetic means in both plants \parencite{palmOilKernel}, non-human animals \parencite{dolinoy_maternal_2007} and humans \parencite{yehuda_holocaust_2015}, giving rise to the field of Epigenetics. We shall consider both environmental and epigenetic factors to be outside of the scope of this research. A curious reader is referred to an accessible, popular science discussion of the topic of GWAS, height inheritance and epigenetics by \textcite{GWASDiscussion}. A concerned reader should find assurance in that a great many traits do obey Mendelian's Inheritance straightforwardly. A comprehensive database for human traits, maintained by John Hopkins University at omim.org \parencite{omim16}, finds 24617 such genes using the match-all wildcard $*$, including 22044 \gls{autosomal} genes (as of \date{March 13, 2016}).
+We have to remark that these assumptions may not be immediately true for certain seemingly continuous, partially environment-dependent characteristics such as height, weight or individual's position in the autism spectrum. However experiments using various methods have consistently asserted that ~80\% of human height is inheritable \parencite{heightTwins, heightJustSiblings}. Although the challenge of identifying all genes affecting height is still open, recent progress using a cross-discipline technique called Genome Wide Association Study (GWAS) identified over 40 genes, which contribute 5 percent points towards total height heritability. To play devil's advocate further, it has been recently established that important traits can be acquired and inherited by non-genetic means in both plants \parencite{palmOilKernel}, non-human animals \parencite{dolinoy_maternal_2007} and humans \parencite{yehuda_holocaust_2015}, giving rise to the field of Epigenetics. We shall consider both environmental and epigenetic factors to be outside of the scope of this research. A curious reader is referred to an accessible, popular science discussion of the topic of GWAS, height inheritance and epigenetics by \textcite{GWASDiscussion}. A concerned reader should find assurance in that a great many traits do obey Mendelian's Inheritance straightforwardly. A comprehensive database for human traits, maintained by John Hopkins University at omim.org \parencite{omim16}, finds 24617 such genes using the match-all wildcard $*$, including 22044 \gls{autosomal} genes (as of \date{March 13, 2016}).
 
 Before we proceed let us recall the following, standard notation: if an \gls{allele} encoding a trait is determined to be \gls{dominant} we will represent it with capital letter, e.g. $\mathrm{A}$. In such case a lack of trait will be considered \gls{recessive} and be denoted as $\mathrm{a}$. Under the assumption \ref{genotypes}, we will consider all three possible genotypes: \genotype{A}{A} -- homozygous dominant, \genotype{A}{a} -- heterozygous and \genotype{a}{a} -- homozygous recessive. Of these the first two the genotypes \genotype{A}{A} and \genotype{A}{a} will result in an individual possessing the characteristic. An individual with the last genotype \genotype{a}{a} will not exhibit the trait. Analogously, one can consider a trait inherited recessively, and in such case the above description is true when ``trait'' is mutually exchanged with ``lack of trait'', ``not exhibit the trait'' with ``exhibit the trait'', etc.
 
@@ -184,18 +218,56 @@ Further, we will assume that
 \end{assum}
 We can use our assumptions \ref{genotypes}, \ref{dominance}, \ref{offspring} to work out that in a specific case of breeding two heterozygous individuals, an \genotype{A}{a} mother and an \genotype{A}{a} father, each individual offspring will have either of 3 possible genotypes with probabilities $\frac{1}{4}$ for \genotype{A}{A}, $\frac{1}{2}$ for \genotype{A}{a} and $\frac{1}{4}$ for \genotype{a}{a}. Table \ref{offspringTable} gives all possible outcomes of breeding all possible genotypes involving one characteristic along with corresponding probabilities. If the desired mode of inheritance is dominant, the reader can interpret \genotype{A}{a} and \genotype{A}{A} as trait-positive and \genotype{a}{a} as trait-negative. For the recessive case, \genotype{a}{a} is trait-positive and both \genotype{A}{A} and \genotype{A}{a} are trait-negative.
 
-\begin{table}[]
-    \centering
-    \begin{tabular}{cc||c|c|c|}
-    \cline{3-5}
-     &  & \multicolumn{3}{c|}{mother} \\ \cline{3-5} 
-     &  & \genotype{a}{a} & \genotype{A}{a} & \genotype{A}{A} \\ \hline\hline
-    \multicolumn{1}{|c|}{father} & \genotype{a}{a} & \genotype{a}{a} 1 & \begin{tabular}[c]{@{}l@{}}\genotype{a}{a} $\frac{1}{2}$ \\ \genotype{A}{a} $\frac{1}{2}$ \end{tabular} & \genotype{A}{a} 1 \\ \cline{2-5} 
-    \multicolumn{1}{|l|}{} & \genotype{A}{a} & \begin{tabular}[c]{@{}l@{}}\genotype{a}{a} $\frac{1}{2}$\\ \genotype{A}{a} $\frac{1}{2}$\end{tabular} & \begin{tabular}[c]{@{}l@{}}\genotype{a}{a} $\frac{1}{4}$\\ \genotype{A}{a} $\frac{1}{2}$\\ \genotype{A}{A} $\frac{1}{4}$\end{tabular} & \begin{tabular}[c]{@{}l@{}}\genotype{A}{a} $\frac{1}{2}$\\ \genotype{A}{A} $\frac{1}{2}$\end{tabular} \\ \cline{2-5} 
-    \multicolumn{1}{|l|}{} & \genotype{A}{A} & \genotype{A}{a} 1 & \begin{tabular}[c]{@{}l@{}}\genotype{A}{a} $\frac{1}{2}$\\ \genotype{A}{A} $\frac{1}{2}$\end{tabular} & \genotype{A}{A} 1 \\ \hline
-    \end{tabular}
-    \caption{Possible offspring genotypes with corresponding probabilities}
-    \label{offspringTable}
+\begin{table}[H]
+\centering
+        \renewcommand{\arraystretch}{1.5}% Spread rows out...
+        \begin{tabular}{|r|r|r|r|r|r|r|r|}
+\cline{3-8}
+\multicolumn{1}{c}{}& \multicolumn{1}{c}{} & \multicolumn{6}{|c|}{mother} \\ \cline{3-8}
+\multicolumn{1}{c}{}& \multicolumn{1}{c}{} & \multicolumn{2}{|c|}{\genotype{a}{a}} & \multicolumn{2}{c|}{\genotype{A}{a}} & \multicolumn{2}{c|}{\genotype{A}{A}}  \\
+\cline{1-8}
+\parbox[t]{2mm}{\multirow{7}{*}{\rotatebox[origin=c]{90}{father}}} &\multirow{2}{*}{\genotype{a}{a}} &\genotype{a}{a}&1& \genotype{a}{a}& $\frac{1}{2}$ & \genotype{A}{a} & 1\\
+&
+& &&\genotype{A}{a}& $\frac{1}{2}$&&\\
+\cline{2-8}
+& \multirow{3}{*}{\genotype{A}{a}} &\genotype{a}{a}& $\frac{1}{2}$ &\genotype{a}{a}& $\frac{1}{4}$&\genotype{A}{a}& $\frac{1}{2}$\\
+&&\genotype{A}{a}& $\frac{1}{2}$&\genotype{A}{a}& $\frac{1}{2}$&\genotype{A}{A}& $\frac{1}{2}$\\
+&&&&\genotype{A}{A}& $\frac{1}{4}$&&\\
+\cline{2-8}
+& \multirow{2}{*}{\genotype{A}{A}} &\genotype{A}{a}& 1&\genotype{A}{a}& $\frac{1}{2}$&\genotype{A}{A}& 1\\
+&&&&\genotype{A}{A}& $\frac{1}{2}$&&\\
+\cline{1-8}
+\end{tabular}
+\caption{Possible offspring genotypes with corresponding probabilities}
+\label{offspringTable}
+\end{table}
+
+
+\begin{table}
+\centering
+        \renewcommand{\arraystretch}{1.5}% Spread rows out...
+        \begin{tabular}{|c|c|cc|cc|cc|}
+\cline{3-8}
+\multicolumn{1}{c}{}& \multicolumn{1}{c}{} & \multicolumn{3}{|c|}{mother} & \multicolumn{3}{|c|}{probability}\\ \cline{3-8}
+\multicolumn{1}{c}{}& \multicolumn{1}{c}{} & \multicolumn{1}{|c}{\genotype{a}{a}} & p & \genotype{A}{a} & 2q & \genotype{A}{A} & r \\
+\cline{1-8}
+
+\parbox[t]{2mm}{\multirow{3}{*}{\rotatebox[origin=c]{90}{probability}}} &\genotype{a}{a}&\genotype{a}{a}&pr&\genotype{a}{a}&qr&\genotype{A}{A}&r$^{2}$\\
+&r&&&\genotype{A}{a}&qr&&\\
+\cline{2-8}
+
+&\genotype{A}{a}&\genotype{a}{a}&pq&\genotype{a}{a}&q$^{2}$&\genotype{A}{a}&qr\\
+\cline{1-1}
+\parbox[t]{2mm}{\multirow{3}{*}{\rotatebox[origin=c]{90}{father}}} &2q&\genotype{A}{a}&pq&\genotype{A}{a}&2q$^{2}$&\genotype{A}{A}&qr\\
+&&&&\genotype{A}{A}&q$^{2}$&&\\
+\cline{2-8}
+
+&\genotype{A}{A}&\genotype{A}{a}&p$^{2}$&\genotype{A}{a}&qp&\genotype{A}{A}&pr\\
+&p&&&\genotype{A}{A}&qp&&\\
+\cline{1-8}
+\end{tabular}
+\caption{Possible offspring genotypes with corresponding probabilities expressed in terms of probabilities of parental genotypes.}
+\label{hardyTable}
 \end{table}
 
 Finally, we have to remark that the assumption \ref{offspring} may not be correct in rare cases of \gls{sex-linked} characteristics (e.g. colour-blindess). This research will focus exclusively on \gls{autosomal} genes.
@@ -206,7 +278,7 @@ Finally, we have to remark that the assumption \ref{offspring} may not be correc
 Let us desribe a distribution of genotypes in the population as the ratio of dominant homozygotes to heterozygotes to recessive homozygotes, symbolically $$p:2q:r$$ $2q$ appears in the ratio to ease the computation.
 \end{samepage}
 
-The ingenious insight of \cite{hardy08} is in observing that for certain values of $p$, $q$ and $r$, the ratio will stay unchanged from generation to generation; ratios with this property he calls ``stable''. Hardy gives conditions for stability, and shows that ratios that aren't stable converge to ``stable'' ratios as the population develops. Hardy's argument is based on assuming an arbitrary ratio in the parent generation and computing the ratio of the children's generation. He accomplishes that using a table much like \ref{offspringTable}, and then solving a system of three degree-2 polynomials in three indeterminates: $p$, $q$ and $r$. The result, $q^{2}=pr$, is a necessary and sufficient condition for the ratio to be stable. We have to remark a few assumptions made by Hardy for his proof of the stability condition. Namely, the population is assumed to be isolated, randomly mating, it is assumed to be large, and the number of men and women is assumed to be equal. Hardy's argument does not take into account natural selection.
+The ingenious insight of \cite{hardy08} is in observing that for certain values of $p$, $q$ and $r$, the ratio will stay unchanged from generation to generation; ratios with this property he calls ``stable''. Hardy gives conditions for stability, and shows that ratios that aren't stable converge to ``stable'' ratios as the population develops. Hardy's argument is based on assuming an arbitrary ratio in the parent generation and computing the ratio of the children's generation. He accomplishes that by considering ``A little mathematics of the multiplication-table type'' in the spirit of Table \ref{hardyTable}, and then solving a system of three degree-2 polynomials in three indeterminates: $p$, $q$ and $r$. The result, $q^{2}=pr$, is a necessary and sufficient condition for the ratio to be stable. We have to remark a few assumptions made by Hardy for his proof of the stability condition. Namely, the population is assumed to be isolated, randomly mating, it is assumed to be large, and the number of men and women is assumed to be equal. Hardy's argument does not take into account natural selection.
 
 \section{Work of Fisher}
 
@@ -214,7 +286,7 @@ The work of Ronald Fisher had drastic influence on the landcape of both statisti
 
 \section{Coalescent method}
 
-The coalescent method, in its most basic form, is used to predict the time (in generations) one has to go back in the population graph for any genetic trait to reach the individual it originated from (``coalesce''). The method is usually employed for a group of individuals with unknown predecessor structure, which makes it suitable for use in situations when data regarding only extant individuals is available. Given an extant population, the coalescent method works backwards in time, with generations in hypothetical ancestry assigned probabilities of containing the coalescent. Although in this basic application the coalescent method is relatively straightforward to apply, once natural selection is included the method gets subtle and very complicated, with most research still open-ended \parencite{Wakeley16}. For a comprehensive review, a reader is referred to \cite{Wakeley16}. 
+The coalescent method, in its most basic form, is used to predict the time (in generations) one has to go back in the population graph for any genetic trait to reach the individual it originated from (``coalesce''). The method is usually employed for a group of individuals with unknown predecessor structure, which makes it suitable for use in situations when data regarding only extant individuals is available. Given an extant population, the coalescent method works backwards in time, with generations in hypothetical ancestry assigned probabilities of containing the coalescent. Although in this basic application the coalescent method is relatively straightforward to apply, once natural selection is included the method gets subtle and very complicated, with most research still open-ended \parencite{Wakeley16}. For a comprehensive review, a reader is referred to a work by \cite{Wakeley16}. 
 
 \section{Forward-Time Modeling}
 
@@ -230,9 +302,11 @@ The authors decide to use a continuous-generation model, with individuals born t
 
 The model proposed by the authors does not take into account natural selection.
 
-% METHODOLOGY =====================================================
+% METHODOLOGY ==================================================================
 
 \chapter{Choice of methodology}\label{methodology}
+
+\section{Simulation technique}
 
 After a consideration given to both coalescent and forward-time approach, the forward time approach is chosen for the following reasons:
 
@@ -241,6 +315,8 @@ After a consideration given to both coalescent and forward-time approach, the fo
 \item Writing computer code is at heart of forward-time modeling, as the technique is fundamentally computational. There are challenges involving code correctness, performance and choice of algorithms. Handling these appropriately can be considered a good challenge for a computer programmer.  
 \item Coalescent method, with its statistical difficulties could be cognitively prohibitive, especially taken into account the amount of time that could be spent on the project and the skill-set of the investigator.  
 \end{itemize}
+
+\section{Workload management}
 
 The approach was split into two units of work. The first was the design and implementation of a forward-time modeling framework, suitable for our purpose. The framework is implemented as a python module, and was accomplished to strict software engineering standards, is implemented in a portable way, thoroughly tested, reasonably documented, and easily extensible. The second unit of work was the design and execution of the experiment itself.
 
@@ -296,7 +372,7 @@ SimuPOP allows for extensive modeling of genomes, such as modeling multiple loci
 The proposed framework takes much simpler approach consistent with our requirement of investigating a single feature, in its present form allowing for only one \gls{locus} capable of containing only 2 alleles.
 
 \subsection{Migration}
-The proposed framework takes a different approach to modeling migration than either simuPOP or \cite{rohde04}. Both simuPOP and the other program allow for maintaining partial population substructure through simulating many small randomly breeding sub-populations with limited migration between these sub-populations. The proposed framework is different in that it allows for continuous diffusion of sims on the surface of the world they live in, which is a unit sphere. Appropriate spherical trigonometry was derived using a blend of traditional paper-based computation and Sage \parencite{sage14}. The README.md file accompanying the source gives sufficient description to reproduce these results.
+The proposed framework takes a different approach to modeling migration than either simuPOP or \cite{rohde04}. Both simuPOP and the program of Rohde, Olson and Chang allow for maintaining partial population substructure through simulating many small randomly breeding sub-populations with limited migration between these sub-populations. The proposed framework is different in that it allows for continuous diffusion of sims on the surface of the world they live in, which is a unit sphere. Appropriate spherical trigonometry was derived using a blend of traditional paper-based computation and Sage \parencite{sage14}. The README.md file accompanying the source gives sufficient description to reproduce these results.
 
 The sims can migrate on the surface of the sphere using two different schemes, the wanderer scheme, which positions any sim in a random (pole-adjusted) point on the sphere, and homebody, which moves a sim by at most a great-arc distance k on the sphere, in a random direction. Additional types of migrators can be implemented by the user.
 
@@ -304,29 +380,159 @@ The sims can migrate on the surface of the sphere using two different schemes, t
 
 The framework allows for a simulation of \gls{autosomal} recessive and \gls{autosomal} dominant alleles. The \gls{sex-linked} genes are not supported, unlike in simuPOP.
 
+A mutator -- a function defining mutation event, which can change genotype of any number of sims in any generation -- can be provided by the user as a python function with signature as expected by the framework. In the experiment the only non-empty mutator is used at the beginning of each simulation to introduce a single individual with an advantageous feature.
+
 \subsection{Natural Selection}
 
-The frameork implements the natural selection scheme proposed by \cite{peng10}, and discussed in detail in chapter \ref{research}. The user can easily define any other natural selection scheme.
+The framework implements the natural selection scheme proposed by \cite{peng10}, and discussed in detail in chapter \ref{research}. The user can easily define any other natural selection scheme.
 
 \subsection{Generations}
-discrete generations as in simuPOP. This is unlike Rohde and Olhsen.
+
+The framework operates using discrete generations, much like simuPOP. Introduction of continuous generations, like in \parencite{rohde04} was considered to be conceptually too difficult to implement in the framework given the limited amount of time. It needs to be admitted that modeling populations using discrete generations can lead to discrepancies between the effects of natural selection observed \textit{in silico} against those observed \textit{in vivo} \parencite{Waples14}. Discrete generations are therefore a limitation of this study. 
 
 \subsection{Mating and Breeding}
-Depending on 
-capture difficulty in random mating -> random fluctuations in population
+
+Two mating and breeding schemes are implemented in the framework and are discussed below. Both mating schemes are based on proximity.
+
+In the first mating scheme the closest two sims of opposite sex on the unit sphere are chosen to form the couple, and are removed from further mating. The process is repeated until no uncoupled sims remain. The corresponding breeding scheme is used to reproduce coupled sims by drawing the number of children for each couple from appropriate probability distribution. This mating and breeding scheme was not used in the simulation for two reasons:
+\begin{itemize}
+\item The size of resulting population is difficult to control. If the expected value of the corresponding probability distribution of the number of children was close to 2, small populations using these schemes were dying out due to random imbalances between the number of men and women and gradually decreasing sizes of subsequent generations. If the expected value was greater than 2 the populations were exploding exponentially.
+\item It was difficult to come up with a realistic natural selection scheme, which could be used along these mating and breeding schemes.
+\end{itemize}
+It is worth pointing out that described mating scheme is monogamous.
+
+The second mating and breeding scheme is based on the relative advantage of sims possessing an advantageous characteristic against sims without the characteristic. The first parent of any sim in each simulated generation is chosen in accordance with their genetic advantage. The closest sim of opposite sex to the first parent is chosen as the second parent. The process is continued until the next generation achieves the size of the previous generation. We should remark that described mating scheme is also monogamous. This mating and breeding scheme is due to \textcite{peng10} and does not suffer from the issues of the previous mating scheme. More detail of this scheme is described in Chapter \ref{research}.
+
+Neither the first nor the second mating and breeding scheme incorporate preferential mating (sexual selection), as they are both purely proximity based. This is acknowledged as a limitation of the study. Ideas regarding expansion of the former scheme with preferential mating are addressed in Chapter \ref{conclusion} as an area for further investigation.
+
+As usually, the framework's user can provide a mating and breeding scheme of their own.
 
 \subsection{Code Correctness}
 Great care was taken to ensure correctness. As of the project submission no discovered bugs or outstanding issues remain, and extensive unit testing has been in place throughout the project. The framework consists of about 1600 lines of code and contains 25 test cases, which provide about 75\% test coverage. The most challenging module, ``processGraph.py'' is most extensively tested, with 10 test cases and 97\% test coverage.
 
-An interesting way of testing the framework was devised to solve the issue of inherent lack of determinism in test case resuls. As simulated processes are probabilistic in nature, a traditional way of testing the program through an instance of input for which output is known could not be realised. Instead, whenever possible, theoretical consideration of the expected distribution of output was undertaken, and a range of values was chosen as valid. The range was chosen in such way as to make it incredibly unlikely for the test case to fail. For binomial distribution for example, 5 standard deviations around mean were taken to form the range.
+An interesting way of testing the framework was devised to solve the issue of inherent lack of determinism in test case results. As simulated processes are probabilistic in nature, a traditional way of testing the program through an instance of input for which output is known could not be realised. Instead, whenever possible, theoretical consideration of the expected distribution of output was undertaken, and a range of values was chosen as valid. The range was chosen in such way as to make it incredibly unlikely for the test case to fail. For binomial distribution for example, 5 standard deviations around mean were taken to form the range.
+
+\subsection{Computing MRCA}
+
+\begin{algorithm}
+\centering
+\caption{to compute a Most Recent Common Ancestor of the last generation in a population graph.}
+\label{MRCA1}
+\begin{algorithmic}[1]
+\Procedure{MRCA1 }{populationGraph}
+\For{sim in populationGraph.firstGeneration}
+    \State \Call{countDescendants}{sim}
+\EndFor
+\State \Return \Call{discoverMRCA}{populationGraph.lastGeneration}
+\EndProcedure
+
+\Procedure{countDescendants }{sim}
+\If{sim.descendantsCount not initialised}
+\State sims.descendantsCount $\gets$ 0
+\Else {} \Return{sim.descendantsCount}
+\EndIf
+\For{child in sim.children}
+\State \textbf{increment} sim.descendantsCount \textbf{by} \Call{countDescendants }{child}
+\EndFor
+\If{sim.children is empty}
+\State sim.descendantsCount $\gets$ 1
+\EndIf
+\State\Return sim.descendantsCount
+\EndProcedure
+
+\Procedure{discoverMRCA }{sims}
+\State q $\gets$ initialise empty queue
+\State minimumCAcount $\gets$ sims.size
+\For{sim in sims}
+\State add sim to the rear of q
+\EndFor
+\While{q is not empty}
+  \State sim $\gets$ retrieve and remove an element from the front of q
+  \If{sim.descendantsCount \textbf{equals} minimumCAcount} \Return sim
+  \EndIf
+  \For {parent of sim}
+    \If{parent not coloured} 
+      \State add parent to the rear of q
+      \State colour parent
+    \EndIf
+    \EndFor
+\EndWhile
+\State \Return null
+\EndProcedure
+
+\end{algorithmic}
+\end{algorithm}
+
+\begin{algorithm}
+\centering
+\caption{to compute a Most Recent Common Ancestor of the last generation in a population graph.}
+\label{MRCA2}
+\begin{algorithmic}[1]
+\Procedure{MRCA2 }{populationGraph}
+\State i $\gets$ 0
+\State q $\gets$ initialize empty queue
+\For{sim in population.lastGeneration}
+    \State sim.tracers $\gets$ initialise array of size populationGraph.lastGeneration.size
+    \For{j s.t. 0 $\leq$ j $<$ populationGraph.lastGeneration.size}
+        \If{j \textbf{equals} i}
+            \State sim.tracers[j] $\gets$ \textbf{true}
+        \Else{ }
+            \State sim.tracers[j] $\gets$ \textbf{false}
+        \EndIf
+    \EndFor
+    \State append sim to the rear of q
+\EndFor
+
+\While{q not empty}
+\State sim $\gets$ remove and retrieve an element from the front of q
+\For{parent of sim}
+    \If{parent.tracers is initialized}
+        \State parent.tracers $\gets$ parent.tracers $|$ sim.tracers \Comment{\textit{element-wise or}}
+    \Else
+        \State parent.tracers $\gets$ \Call{copy}{sim.tracers} \Comment{\textit{a copy of entire array}}
+    \EndIf
+    \If{\Call{all}{parent.tracers}} \Return parent \Comment{\textit{all elements of the array are true}}
+    \EndIf
+    \State append parent to the rear of q
+\EndFor
+\EndWhile
+
+\EndProcedure
+\end{algorithmic}
+\end{algorithm}
+
+The most challenging part of framework implementation was the graph processing module, due to a difficult task of computing a MRCA of a collection of nodes. Algorithms \ref{MRCA1} and \ref{MRCA2} were implemented, and only the former algorithm turned out to satisfy the performance needs. The algorithms follow a different design, and lie on the opposite ends of the speed-memory spectrum, with \ref{MRCA1} designed by the author of this study and trading off efficiency in speed for efficiency in memory usage, and with \ref{MRCA2} being a simplified version of an algorithm due to \textcite{rohde04}, and trading off efficiency in size for efficiency in speed. For clarity of exposition, both algorithms as presented compute a MRCA of the last generation in the simulation. In practice both algorithms can be easily modified to compute a MRCA for any collection of sims, and it is in this form that the second algorithm is used in the project.
+
+Let us discuss time and space complexities of both algorithms under appropriate assumptions we can make with regards to the population graph:
+
+\begin{assum}\label{reachability}
+  All sims are reachable from the first generation following the parent-child relationship.
+\end{assum}
+
+\begin{assum}\label{discreteGen}
+  All paths between any two sims are of the same length (equivalently, generations are discrete).
+\end{assum}
+
+The correctness of algorithm \ref{MRCA1} depends on assumption \ref{reachability}, but it doesn't depend on \ref{discreteGen}. The correctness of algorithm \ref{MRCA2} does not depend on either assumption.
+
+Let $G$ be a population graph. Let the most numerous generation in $G$ be of size $d$. Let there be $k$ generations in $G$. We will obtain $T_{MRCA}$ from a call to either \textsc{MRCA1}($G$) or \textsc{MRCA2}($G$).
+
+\subsubsection{Complexity of \textsc{MRCA1}}
+\textsc{MRCA1}($G$) firstly issues calls to the \textsc{CountDescendants} procedure, to the effect of computing the number of descendants for all sims in the graph. As visiting happens using depth-first search the maximum depth of the recursive call is at most $k$. Therefore the memory taken by stack is $O(k)$. This is dominated by the heap memory that has to be spent for storing descendant counts in each sim, which is $O(dk)$. As all sims have to be visited the time complexity is $O(dk)$. In fact, we can not worsen these complexities by subsequent execution of the procedure \textsc{DiscoverMRCA}, which will again visit at most all sims, and will store no more than $2d$ sims in the queue. Low or high value of $T_{MRCA}$ can not worsen or improve the complexity. To sum up, both space and time complexity is $O(dk)$. We can additionally note that the space complexity is lowest possible, since the graph itself takes $O(dk)$ memory. Therefore, the algorithm is space-optimal.
+
+\subsubsection{Complexity of \textsc{MRCA2}}
+\textsc{MRCA2}($G$) starts by creating at most $d$ arrays with at most $d$ elements, taking $O(d^{2})$ of heap space, and as much of processor time as each element needs to be initialised. It will than visit each sim in the population graph until it reaches the generation, which contains a MRCA. For each sim it visits on its way, it will have to create another array of size at most $d$. In the worst case the generation containing MRCA might be the first generation (for example in the case of two isolated populations, which split off early during the simulation), resulting in time complexity $O(d^{2}k)$ and the same space complexity. From complexity point of view \textsc{MRCA2} seems to be slower than \textsc{MRCA1}. In practice it vastly outperforms it in terms of speed. Why so?
+
+The answer seems to be in the fact that presented analysis is too pessimistic. In practice $T_{MRCA}$ is low. For the type of simulations carried out, it is usually no greater than 10. We have already established that low $T_{MRCA}$ will have no effect on the complexity of \textsc{MRCA1}. Let us consider \textsc{MRCA2}. In non-pessimistic case $T_{MRCA}$ is not equal to $k$, and therefore the algorithm will terminate only after visiting $T_{MRCA}$ last generations. This means visiting at most $dT_{MRCA}$ sims, spending $O(d)$ time per each sim. Resulting space and time complexities are $O(d^{2}T_{MRCA})$. Additionally, careful optimisation (omitted from pseudocode for clarity) can be carried out in order to free up tracer arrays of sims, whose parents' tracer arrays have already been computed. In result, we need only $O(dk + d^{2})$ of space. Moreover, if we treat $T_{MRCA}$ as a constant, the time complexity becomes $O(d^{2})$, which makes \textsc{MRCA2} a competitive alternative to \textsc{MRCA1}.
+
+Aside from favourable theoretic complexity, we can remark that the implementation of \textsc{MRCA2} uses mostly linear memory manipulation/access, which should play well with the CPU cache. The implementation of \textsc{MRCA1} uses python dictionaries, which do not utilise the cache nearly as well.
 
 \subsection{Extensibility}
 
-A major change to the library occurred between revisions eadc6756 and 1af29cde. The change was due to a realisation that a particular algorithm chosen to compute MRCA was performing poorly, and the implementation of an alternative algorithm was undertaken. This required several changes across two modules, the module responsible for graph generation and the module responsible for graph processing. The change was accomplished in a few days of work, and the difficulties rather than in code integration lied in it's high cognitive load. Presumably the change would be more difficult if the safety net of extensive test coverage was not present.  
+A major change to the library occurred between revisions eadc6756 and 1af29cde. The change was due to a realisation that MRCA1 was performing poorly, and the implementation of an alternative (MRCA2) was undertaken. This required several changes across two modules, the module responsible for graph generation and the module responsible for graph processing. The change was accomplished in a few days of work, and the difficulties rather than in code integration lied in it's high cognitive load. Presumably the change would be more difficult if the safety net of extensive test coverage was not present.  
 
 \subsection{Documentation}
 A reasonable part of the framework is documented and is made available through pydoc (and pydoc3). An instruction on how to access the manual is given in detail in the project's README.md, which accompanies the source code. The source code can be accessed on github \parencite{Kurkiewicz16}
-
 
 % REPORT OF RESEARCH WORK ======================================================
 
@@ -340,7 +546,9 @@ An experiment was carried out in order to quantify the effect of positive select
 Throughout the experiment randomness was obtained from python's default random module, which implements Mersenne Twister, a good choice of pseudo-randomness for scientific simulations \parencite{Matsumoto98}. Let us explain the experiment's design.
 
 The initial simulation size was set to be 100 sims, of random sex, and uniformly distributed on the unit sphere. One of the sims, chosen at random, was assigned a \gls{heterozygous} genotype. All other sims were assigned \gls{homozygous} recessive genotypes. The chosen mode of gene expression was \gls{dominant}. The presence of a trait in an invidual would give that individual a comparative breeding advantage of 5\% over an individual without the trait. Each subsequent generation of the simulation was obtained as follows. For each sim in the next generation, first parent was chosen at random from the previous generation. The probability of any sim $s$ being chosen as the first parent can be expressed by a formula
+
 $$p(s, S) = \frac{f(s)}{\sum_{s' \in S}^{}f(s')}$$
+
 where $S$ is the set of all sims in the previous generation (including $s$), and $f(s)$, the sim's absolute fitness, is defined by
 
 $$
@@ -392,10 +600,10 @@ Analogous experiments were executed for all combinations of relative advantage i
 
 \begin{table}[]
     \centering
-    \begin{tabular}{|c|c|c|}
+    \begin{tabular}{|c|c|c|c|c|}
     \hline
-    & Mann-Whitney & Kolomogorov-Smirnov \\ \hline
-    p-values & 0.475 & 0.999 \\ \hline
+    & Mann-Whitney p-value & Kolomogorov-Smirnov p-value & population size & relative advantage  \\ \hline
+     & 0.475 & 0.999 \\ \hline
     \end{tabular}
     \caption{p-values of null-hypothesis for population of size 120 and relative advantage 1.10}
 \end{table}
@@ -450,7 +658,6 @@ Analogous experiments were executed for all combinations of relative advantage i
     \caption{p-values of null-hypothesis for population of size 120 and relative advantage 1.05}
 \end{table}
 
-
 \begin{table}[]
     \centering
     \begin{tabular}{|c|c|c|}
@@ -482,7 +689,6 @@ Analogous experiments were executed for all combinations of relative advantage i
     \caption{p-values of null-hypothesis for population of size 160 and relative advantage 1.05}
 \end{table}
 
-
 \begin{table}[]
     \centering
     \begin{tabular}{|c|c|c|}
@@ -500,25 +706,36 @@ Analogous experiments were executed for all combinations of relative advantage i
 \section{Inconclusive results}
 
 The experiment carried out did not provide evidence allowing to reject the null hypothesis with the cut-off value of 0.05 (0.0045 after Bonferroni correction), which states that selective sweep has no influence on $T_{MRCA}$. There can be numerous reasons for this outcome. Firstly there might be no influence indeed, or the influence might be so slim, that a very big number of measurements would be required to discover it. Looking at the data it seems intuitive that there is no correlation in $T_{MRCA}$ between cases and controls, which would be greater than 0.5 a generation, but a more formal evaluation of the power of the statistical tests used would be necessary to substantiate this intuition. Further, it could be that the difference actually exists, and is substantial, but our tests did not have enough power to detect it. This again would require a formal analysis of statistical power. An interesting approach would be to set the relative advantage to an unrealistically high value and repeat the experiment in such setting. Would we see any influence of $T_{MRCA}$ in such scenario?
-\begin{figure}\label{slowEvolution}
-\caption{The x axis runs through all generations in the simulation. The green line shows $T_{MRCA}$ at each generation, the blue line shows how many advantageous alleles there are in the population at each generation (at most $2*n=240$, where $n=120$ is the number of individuals. There are 2 alleles per individual).}
+
+\begin{figure}
 \centering
-\includegraphics[scale=0.5]{slowEvolution}
+\includegraphics[scale=0.5]{slowEvolutionLabels.png}
+\label{slowEvolution}
+\caption{$T_{MRCA}$ (green line) and number of advantageous alleles (blue line) for each generation in one simulation taken from the case sample of the experiment. The number of sims in each generation is $n=120$. The number of advantageous alleles is at most $2*n=240$.}
 \end{figure}
 
-Alternatively, we might try to look for compelling heuristics in support of the negative answer to the research question. A closer look at any of the case simulations reveals a possible explanation: Natural selection seems to be both slow and inconsistent! The Figure \ref{slowEvolution} shows a population of size 120 undergoing selective sweep. It takes over 300 generations for the feature to spread to the entire population. It is hard to expect that such a slow process would have a big impact on something as quick as $T_{MRCA}$. Colloquially $T_{MRCA}$ is so quick that it doesn't even notice the selective process happening in the background.
+Alternatively, we might try to look for compelling heuristics in support of the negative answer to the research question. A closer look at any of the case simulations reveals a possible explanation: Natural selection seems to be both slow and inconsistent! The Figure \ref{slowEvolution} shows a population of size 120 undergoing selective sweep. The abscissa runs through all generations in the simulation. The blue irregular line shows how many advantageous alleles there are in the population at each generation (at most $2*n=240$, where $n=120$ is the number of individuals. There are 2 alleles per individual). The green line shows $T_{MRCA}$ at each generation. It takes over 300 generations for the characteristic to spread to the entire population. It is hard to expect that such a slow process would have a big impact on something as quick as $T_{MRCA}$. Colloquially speaking $T_{MRCA}$ might be so quick that it doesn't even notice the selective process happening in the background.
 
-Finally, one might not rule out undiscovered bugs having an effect on the result of this investigation. However, high quality and large coverage of unit-tests diminishes the risk. Additionally, it is observed that setting the relative advantage constant to very high values results in populations, where the advantageous feature spreads very quickly. Additionally, a careful inspection of the source code by another programmer than the investigator could decrease the risk even further.
+Further, one might not rule out undiscovered bugs having an effect on the result of this investigation. However, the quality and high coverage of unit-tests diminishes the risk. Additionally, it is observed that setting the relative advantage constant to very high values (20 instead of 1.05) results in populations, where the advantageous feature spreads almost always and very quickly. Additionally, a careful inspection of the source code by another programmer apart from the investigator could decrease the risk even further.
 
-\section{Topics for the future}
+Eventually, some of our assumptions, such as discrete generations or lack of sexual selection (preferential mating) may not correspond to reality. These issues should be considered in the future work.
+
+\section{Areas for further investigation}
 
 \begin{samepage}
 
-An interesting observations was made during non-rigorous inspection of obtained data. Firstly, only about 4\% of advantageous features managed to spread to the entire population in the case study without dying out. It would seem wasteful for nature not to utilise so much reproductive potential. Biologists have looked at sexual selection as both stronger and more consistent form of selective pressure than natural selection \parencite{Miller14}. Could it be that switching sexual selection on could boost the spread of the feature considerably? It could make an interesting follow-up study, and another use-case for the implemented framework: to investigate relative strength of natural selection against sexual selection.
+An interesting observations was made during non-rigorous inspection of obtained data. Firstly, only about 4\% of advantageous features managed to spread to the entire population in the case study without dying out. It would seem wasteful for nature not to utilise so much reproductive potential. It has been argued that sexual selection is both stronger and more consistent form of selective pressure than natural selection \parencite{Miller14}. Could it be that switching sexual selection on could boost the spread of the feature considerably? It could make an interesting follow-up study, and another use-case for the implemented framework: to investigate relative strength of natural selection against sexual selection.
 
 \end{samepage}
 
 %\chapter{Glossary}
 \printglossaries
+
+
+\begingroup
+\sloppy
 \printbibliography[heading=bibintoc]
+\endgroup
+
+%\printbibliography[heading=bibintoc]
 \end{document}
